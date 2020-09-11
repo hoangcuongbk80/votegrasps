@@ -44,7 +44,7 @@ class YCBObject(object):
 
 
 def load_pointcloud(pc_filename):
-    pointcloud = pc_util.read_ply(pc_filename)
+    pointcloud = pc_util.read_xyzrgb_ply(pc_filename)
     return pointcloud
 
 def load_label(obb_filename):

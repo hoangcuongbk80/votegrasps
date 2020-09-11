@@ -29,7 +29,7 @@ import ycbgrasp_utils
 parser = argparse.ArgumentParser()
 parser.add_argument('--viz', action='store_true', help='Run data visualization.')
 parser.add_argument('--gen_data', action='store_true', help='Generate training dataset.')
-parser.add_argument('--num_sample', type=int, default=2, help='Number of samples [default: 10000]')
+parser.add_argument('--num_sample', type=int, default=24, help='Number of samples [default: 10000]')
 
 args = parser.parse_args()
 
@@ -68,7 +68,7 @@ def data_viz(data_dir, dump_dir=os.path.join(BASE_DIR, 'data_viz_dump')):
             os.mkdir(dump_dir)
 
     for idx in range(len(ycb)):
-        if idx%100:
+        if idx%500:
             continue
         data_idx = idxs[idx]
         print('data index: ', data_idx)
@@ -108,7 +108,7 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
         # Save pointcloud
         pc = dataset.get_pointcloud(data_idx)
         xyz_pc=pc[:,0:3]
-        #np.savez_compressed(os.path.join(output_folder,'%06d_pc.npz'%(data_idx)), pc=xyz_pc)
+        np.savez_compressed(os.path.join(output_folder,'%06d_pc.npz'%(data_idx)), pc=xyz_pc)
         # Save obbs and votes
         object_list = []
         N = pc.shape[0]
@@ -133,7 +133,6 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
             # Add the votes (all 0 if the point is not in any object's OBB)
             votes = np.expand_dims(obj.centroid,0) - object_pc[:,0:3]
             sparse_inds = indices[inds] # turn dense True,False inds to sparse number-wise inds
-            print(sparse_inds.shape)
             for i in range(len(sparse_inds)):
                 j = sparse_inds[i]
                 point_votes[j, int(point_vote_idx[j]*3+1):int((point_vote_idx[j]+1)*3+1)] = votes[i,:]
@@ -143,12 +142,12 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
                     point_votes[j,7:10] = votes[i,:]
             point_vote_idx[inds] = np.minimum(2, point_vote_idx[inds]+1)
 
-        #np.savez_compressed(os.path.join(output_folder, '%06d_votes.npz'%(data_idx)), point_votes = point_votes)
+        np.savez_compressed(os.path.join(output_folder, '%06d_votes.npz'%(data_idx)), point_votes = point_votes)
         if len(object_list)==0:
             obbs = np.zeros((0,8))
         else:
             obbs = np.vstack(object_list) # (K,8)
-        #np.save(os.path.join(output_folder, '%06d_bbox.npy'%(data_idx)), obbs)
+        np.save(os.path.join(output_folder, '%06d_bbox.npy'%(data_idx)), obbs)
 
     return 0
 
@@ -163,8 +162,8 @@ if __name__=='__main__':
         idxs = np.array(range(0,args.num_sample))
         np.random.seed(0)
         np.random.shuffle(idxs)
-        np.savetxt(os.path.join(BASE_DIR, 'data', 'train_data_idx.txt'), idxs[:1], fmt='%i')
-        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[1:], fmt='%i')
+        np.savetxt(os.path.join(BASE_DIR, 'data', 'train_data_idx.txt'), idxs[:18], fmt='%i')
+        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[18:], fmt='%i')
         
         DATA_DIR = os.path.join(BASE_DIR, 'data')
         extract_ycbgrasp_data(DATA_DIR, os.path.join(DATA_DIR, 'train_data_idx.txt'),

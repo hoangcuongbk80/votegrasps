@@ -2,9 +2,12 @@
 nvidia-docker build --tag votegrasp ./
 
 # create a container
-nvidia-docker run --name my_votegrasp -it --rm -v /home/cghg/votegrasp:/votegrasp -v /media/DiskStation/trsv/data/ycbgrasp:/ycbgrasp_dataset --ipc=host votegrasp /bin/bash
+nvidia-docker run --name my_votegrasp -it --rm -v /home/cghg/votenet/:/votenet -v /media/DiskStation/trsv/data/ycbgrasp:/ycbgrasp_dataset --ipc=host votegrasp /bin/bash
 
 # training
 cd pointnet2
 python setup.py install
 python grasp_train.py --dataset ycbgrasp --log_dir log_ycbgrasp
+
+# testing
+python grasp_demo.py

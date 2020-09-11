@@ -190,13 +190,19 @@ def point_cloud_to_image(points, imgsize, radius=1.0, num_sample=128):
 # Point cloud IO
 # ----------------------------------------
 
-def read_ply(filename):
+def read_xyzrgb_ply(filename):
     """ read XYZ point cloud from filename PLY file """
     plydata = PlyData.read(filename)
     pc = plydata['vertex'].data
     pc_array = np.array([[x, y, z, r, g, b] for x,y,z,r,g,b in pc if -0.3<x<0.3 and -0.3<y<0.3])
     return pc_array
 
+def read_ply(filename):
+    """ read XYZ point cloud from filename PLY file """
+    plydata = PlyData.read(filename)
+    pc = plydata['vertex'].data
+    pc_array = np.array([[x, y, z] for x,y,z in pc])
+    return pc_array
 
 def write_ply(points, filename, text=True):
     """ input: Nx3, write points to filename as PLY format. """
