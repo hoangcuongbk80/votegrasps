@@ -106,7 +106,7 @@ def my_worker_init_fn(worker_id):
 # Create Dataset and Dataloader
 if FLAGS.dataset == 'ycbgrasp':
     sys.path.append(os.path.join(ROOT_DIR, 'ycbgrasp'))
-    from ycbgrasp_dataset import ycbgraspVotesDataset, MAX_NUM_OBJ
+    from ycbgrasp_dataset import ycbgraspVotesDataset, MAX_NUM_GRASP
     from model_util_ycbgrasp import ycbgraspDatasetConfig
     DATASET_CONFIG = ycbgraspDatasetConfig()
     TRAIN_DATASET = ycbgraspVotesDataset('train', num_points=NUM_POINT,
