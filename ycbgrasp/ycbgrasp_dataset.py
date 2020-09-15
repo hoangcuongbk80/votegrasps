@@ -99,12 +99,12 @@ class ycbgraspVotesDataset(Dataset):
             grasp_center = grasp[0:3]
             angle_class, angle_residual = DC.angle2class(grasp[6]) 
             grasp_size = grasp[3:6]*2
-            size_class, size_residual = DC.size2class(box3d_size, DC.class2type[semantic_class])
+            size_class, size_residual = DC.size2class(grasp_sizes, DC.class2type[semantic_class])
             grasp_centers[i,:] = grasp_center
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual
             size_classes[i] = size_class
-            size_residuals[i] = size_residual
+            #size_residuals[i] = size_residual
             grasp_sizes[i,:] = grasp_size
 
         target_grasps_mask = label_mask 
