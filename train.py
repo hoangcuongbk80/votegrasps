@@ -110,7 +110,7 @@ if FLAGS.dataset == 'ycbgrasp':
     from model_util_ycbgrasp import ycbgraspDatasetConfig
     DATASET_CONFIG = ycbgraspDatasetConfig()
     TRAIN_DATASET = ycbgraspVotesDataset('train', num_points=NUM_POINT,
-        augment=True,
+        augment=False,
         use_color=FLAGS.use_color, use_height=(not FLAGS.no_height))
     TEST_DATASET = ycbgraspVotesDataset('val', num_points=NUM_POINT,
         augment=False,

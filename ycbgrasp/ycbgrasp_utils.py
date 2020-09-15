@@ -22,34 +22,36 @@ type2class={'007_tuna_fish_can':0, '008_pudding_box':1, '011_banana':2, '024_bow
 class2type = {type2class[t]:t for t in type2class}
 
 class YCBObject(object):
-    def __init__(self, line):
-        data = line.split(' ')
-        data[1:] = [float(x) for x in data[1:]]
-        self.classname = data[0]
-        self.centroid = np.array([data[1],data[2],data[3]])
-        self.w = data[4] + 0.01
-        self.l = data[5] + 0.01
-        self.h = data[6] + 0.01
-        self.heading_angle = data[7]
-        if self.classname=='008_pudding_box':
-            self.heading_angle = data[7] - math.pi/3
-        if self.classname=='011_banana':
-            self.heading_angle = data[7] - math.pi/8
-        if self.classname=='044_flat_screwdriver':
-            self.heading_angle = data[7] + math.pi/4
-        if self.classname=='051_large_clamp':
-            self.heading_angle = data[7]
-        if self.classname=='061_foam_brick':
-            self.heading_angle = data[7]
-
+    def __init__(self, obj_name, grasp_lines):
+        self.grasps = []
+        self.classname = obj_name
+        for line in grasp_lines:
+            data = line.split(' ')
+            data[1:] = [float(x) for x in data[1:]]
+            grasp = [data[1],data[2],data[3],data[6]] # grasp_position + heading_angle
+            self.grasps.append(grasp)
 
 def load_pointcloud(pc_filename):
     pointcloud = pc_util.read_xyzrgb_ply(pc_filename)
     return pointcloud
 
-def load_label(obb_filename):
-    lines = [line.rstrip() for line in open(obb_filename)]
-    objects = [YCBObject(line) for line in lines[1:]]
+def load_label(grasp_filename, num_grasp):
+    lines = [line.rstrip() for line in open(grasp_filename)]
+    grasp_lines = []
+    obj_name = ''
+    objects = []
+    for line in lines[1:]:
+        data = line.split(' ')
+        if data[0] != obj_name:
+            if obj_name != '':
+                obj = YCBObject(obj_name, grasp_lines)
+                objects.append(obj)
+            obj_name = data[0]
+            grasp_lines = []
+            grasp_lines.append(line)
+        else:
+            if len(grasp_lines) < num_grasp:
+                grasp_lines.append(line)
     return objects
 
 def rotz(t):

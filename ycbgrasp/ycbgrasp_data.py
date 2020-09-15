@@ -30,6 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--viz', action='store_true', help='Run data visualization.')
 parser.add_argument('--gen_data', action='store_true', help='Generate training dataset.')
 parser.add_argument('--num_sample', type=int, default=24, help='Number of samples [default: 10000]')
+parser.add_argument('--num_grasp', type=int, default=3, help='Number of samples [default: 3]')
 
 args = parser.parse_args()
 
@@ -41,8 +42,9 @@ class ycb_object(object):
     def __init__(self, data_dir):
 
         self.pointcloud_dir = os.path.join(data_dir, 'pointcloud')
-        self.obb_dir = os.path.join(data_dir, 'obb')
+        self.grasp_dir = os.path.join(data_dir, 'grasp')
         self.num_samples = args.num_sample
+        self.num_grasps = args.num_grasp
         
     def __len__(self):
         return self.num_samples
@@ -53,9 +55,9 @@ class ycb_object(object):
         return ycbgrasp_utils.load_pointcloud(pc_filename)
 
     def get_label_objects(self, idx): 
-        obb_filename = os.path.join(self.obb_dir, '%d.txt'%(idx))
-        print(obb_filename)
-        return ycbgrasp_utils.load_label(obb_filename)
+        grasp_filename = os.path.join(self.grasp_dir, '%d.txt'%(idx))
+        print(grasp_filename)
+        return ycbgrasp_utils.load_label(grasp_filename, self.num_grasps)
 
 def data_viz(data_dir, dump_dir=os.path.join(BASE_DIR, 'data_viz_dump')):
     ''' Examine and visualize ycbgrasp dataset. '''
@@ -109,8 +111,8 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
         pc = dataset.get_pointcloud(data_idx)
         xyz_pc=pc[:,0:3]
         np.savez_compressed(os.path.join(output_folder,'%06d_pc.npz'%(data_idx)), pc=xyz_pc)
-        # Save obbs and votes
-        object_list = []
+        # Save grasps and votes
+        grasp_list = []
         N = pc.shape[0]
         point_votes = np.zeros((N,10)) # 3 votes and 1 vote mask 
         point_vote_idx = np.zeros((N)).astype(np.int32) # in the range of [0,2]
@@ -120,34 +122,32 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
             
             if len(object_pc) < 300:
                 continue
-            # Add obb
-            obb = np.zeros((8))
-            obb[0:3] = obj.centroid
-            obb[3:6] = np.array([obj.l,obj.w,obj.h])
-            obb[6] = obj.heading_angle
-            obb[7] = ycbgrasp_utils.type2class[obj.classname]
-            object_list.append(obb)
+            # Add grasp
+            for grp in obj.grasps:
+                grasp = np.zeros((8))
+                grasp[0:3] = np.array([grp[0], grp[1], grp[2]]) # grasp_position
+                grasp[3:6] = np.array([1.0,1.0,1.0]) # before: obb length, now: grasp quality
+                grasp[6] = grp[3] # heading_angle
+                grasp[7] = ycbgrasp_utils.type2class[obj.classname]
+                grasp_list.append(grasp)
             
             # Assign first dimension to indicate it is in an object box
             point_votes[inds,0] = 1
-            # Add the votes (all 0 if the point is not in any object's OBB)
-            votes = np.expand_dims(obj.centroid,0) - object_pc[:,0:3]
-            sparse_inds = indices[inds] # turn dense True,False inds to sparse number-wise inds
-            for i in range(len(sparse_inds)):
-                j = sparse_inds[i]
-                point_votes[j, int(point_vote_idx[j]*3+1):int((point_vote_idx[j]+1)*3+1)] = votes[i,:]
-                # Populate votes with the fisrt vote
-                if point_vote_idx[j] == 0:
-                    point_votes[j,4:7] = votes[i,:]
-                    point_votes[j,7:10] = votes[i,:]
-            point_vote_idx[inds] = np.minimum(2, point_vote_idx[inds]+1)
+            for grasp_idx, grp in enumerate(obj.grasps):
+                grasp_position = np.array([grp[0], grp[1], grp[2]])
+                # Add the votes (all 0 if the point is not in any object's OBB)
+                votes = np.expand_dims(grasp_position,0) - object_pc[:,0:3]
+                sparse_inds = indices[inds] # turn dense True,False inds to sparse number-wise inds
+                for i in range(len(sparse_inds)):
+                    j = sparse_inds[i]
+                    point_votes[j, int(grasp_idx*3+1):int((grasp_idx+1)*3+1)] = votes[i,:]
 
         np.savez_compressed(os.path.join(output_folder, '%06d_votes.npz'%(data_idx)), point_votes = point_votes)
-        if len(object_list)==0:
-            obbs = np.zeros((0,8))
+        if len(grasp_list)==0:
+            grasps = np.zeros((0,8))
         else:
-            obbs = np.vstack(object_list) # (K,8)
-        np.save(os.path.join(output_folder, '%06d_bbox.npy'%(data_idx)), obbs)
+            grasps = np.vstack(grasp_list) # (K,8)
+        np.save(os.path.join(output_folder, '%06d_grasp.npy'%(data_idx)), grasps)
 
     return 0
 
