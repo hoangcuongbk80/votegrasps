@@ -58,8 +58,8 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
     pred_mask = end_points['pred_mask'] # B,num_proposal
     idx_beg = 0
 
-    save_grasp_file = os.path.join(dump_dir, 'gred_grasps.txt')
-    f = open(save_grasp_file, "a")
+    save_grasp_file = os.path.join(dump_dir, 'pred_grasps.txt')
+    f = open(save_grasp_file, "w")
     f.write("object x y z rx ry rz quality dofValue\n")
 
     for i in range(batch_size):
@@ -86,10 +86,14 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
                                 pred_size_class[i,j], pred_size_residual[i,j])
                 obbs.append(obb)
 
-                grasp = config.param2obb(pred_center[i,j,0:3], pred_heading_class[i,j], pred_heading_residual[i,j],
+                grasp = config.param2grasp(pred_center[i,j,0:3], pred_heading_class[i,j], pred_heading_residual[i,j],
                                 pred_size_class[i,j])
-                for item in grasp:
-                    f.write(item)
+                f.write(grasp[0])
+                f.write(' ')             
+                for ite in grasp[1:]:
+                    str_num = '{:.3f}'.format(ite)
+                    f.write(str_num)
+                    f.write(' ')
                 f.write("\n")
 
             if len(obbs)>0:

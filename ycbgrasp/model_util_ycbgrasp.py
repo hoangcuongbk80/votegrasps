@@ -82,7 +82,7 @@ class ycbgraspDatasetConfig(object):
 
     def param2grasp(self, center, heading_class, heading_residual, size_class):
         heading_angle = self.class2angle(heading_class, heading_residual)
-        object_name = self.class2type[size_class]
+        object_name = self.class2type[int(size_class)]
         grasp = []
         grasp.append(object_name)
         grasp.append(center[0])
