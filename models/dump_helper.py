@@ -58,6 +58,10 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
     pred_mask = end_points['pred_mask'] # B,num_proposal
     idx_beg = 0
 
+    save_grasp_file = os.path.join(dump_dir, 'gred_grasps.txt')
+    f = open(save_grasp_file, "a")
+    f.write("object x y z rx ry rz quality dofValue\n")
+
     for i in range(batch_size):
         pc = point_clouds[i,:,:]
         objectness_prob = softmax(objectness_scores[i,:,:])[:,1] # (K,)
@@ -81,12 +85,21 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
                 obb = config.param2obb(pred_center[i,j,0:3], pred_heading_class[i,j], pred_heading_residual[i,j],
                                 pred_size_class[i,j], pred_size_residual[i,j])
                 obbs.append(obb)
+
+                grasp = config.param2obb(pred_center[i,j,0:3], pred_heading_class[i,j], pred_heading_residual[i,j],
+                                pred_size_class[i,j])
+                for item in grasp:
+                    f.write(item)
+                f.write("\n")
+
             if len(obbs)>0:
                 obbs = np.vstack(tuple(obbs)) # (num_proposal, 7)
                 pc_util.write_oriented_bbox(obbs[objectness_prob>DUMP_CONF_THRESH,:], os.path.join(dump_dir, '%06d_pred_confident_bbox.ply'%(idx_beg+i)))
                 pc_util.write_oriented_bbox(obbs[np.logical_and(objectness_prob>DUMP_CONF_THRESH, pred_mask[i,:]==1),:], os.path.join(dump_dir, '%06d_pred_confident_nms_bbox.ply'%(idx_beg+i)))
                 pc_util.write_oriented_bbox(obbs[pred_mask[i,:]==1,:], os.path.join(dump_dir, '%06d_pred_nms_bbox.ply'%(idx_beg+i)))
                 pc_util.write_oriented_bbox(obbs, os.path.join(dump_dir, '%06d_pred_bbox.ply'%(idx_beg+i)))
+    
+    f.close()
 
     # Return if it is at inference time. No dumping of groundtruths
     if inference_switch:

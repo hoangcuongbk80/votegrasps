@@ -80,4 +80,16 @@ class ycbgraspDatasetConfig(object):
         obb[6] = heading_angle*-1
         return obb
 
-
+    def param2grasp(self, center, heading_class, heading_residual, size_class):
+        heading_angle = self.class2angle(heading_class, heading_residual)
+        object_name = self.class2type[size_class]
+        grasp = []
+        grasp.append(object_name)
+        grasp.append(center[0])
+        grasp.append(center[1])
+        grasp.append(center[2])
+        grasp.append(180)
+        grasp.append(heading_angle)
+        grasp.append(0.922)
+        grasp.append(0.045)
+        return grasp
