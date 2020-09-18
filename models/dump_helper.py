@@ -91,7 +91,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
                 f.write(grasp[0])
                 f.write(' ')             
                 for ite in grasp[1:]:
-                    str_num = '{:.3f}'.format(ite)
+                    str_num = '{:.6f}'.format(ite)
                     f.write(str_num)
                     f.write(' ')
                 f.write("\n")
