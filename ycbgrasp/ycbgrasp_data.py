@@ -75,23 +75,8 @@ def data_viz(data_dir, dump_dir=os.path.join(BASE_DIR, 'data_viz_dump')):
         data_idx = idxs[idx]
         print('data index: ', data_idx)
         pc = ycb.get_pointcloud(data_idx)
-        objects = ycb.get_label_objects(data_idx)
-        oriented_boxes = []
-        for obj in objects:
-            object_pc, inds=ycbgrasp_utils.get_object_points(pc, obj.classname)
-            pc_util.write_ply(object_pc, os.path.join(dump_dir, str(idx) + '_' + obj.classname + '_pc.ply'))
-            if len(object_pc) > 300:
-                obb = np.zeros((7))
-                obb[0:3] = obj.centroid
-                obb[3:6] = np.array([obj.l,obj.w,obj.h])*2
-                obb[6] = obj.heading_angle
-                oriented_boxes.append(obb)
-        if len(oriented_boxes)>0:
-            oriented_boxes = np.vstack(tuple(oriented_boxes))
-            pc_util.write_oriented_bbox(oriented_boxes,
-            os.path.join(dump_dir, str(idx) + '_obbs.ply'))
-            pc=pc[:,0:3]
-            pc_util.write_ply(pc, os.path.join(dump_dir, str(idx) + '_pc.ply'))
+        pc=pc[:,0:3]
+        pc_util.write_ply(pc, os.path.join(dump_dir, str(idx) + '_pc.ply'))
         
     print('Complete!')
     
