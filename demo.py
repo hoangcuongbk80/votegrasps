@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
-from pc_util import random_sampling, read_ply
+from pc_util import random_sampling, read_ply, read_xyzrgb_ply
 from ap_helper import parse_predictions
 
 def preprocess_point_cloud(point_cloud):
@@ -76,7 +76,8 @@ if __name__=='__main__':
    
     # Load and preprocess input point cloud 
     net.eval() # set model to eval mode (for bn and dp)
-    point_cloud = read_ply(pc_path)
+    # point_cloud = read_ply(pc_path)
+    point_cloud = read_xyzrgb_ply(pc_path)
     pc = preprocess_point_cloud(point_cloud)
     print('Loaded point cloud data: %s'%(pc_path))
    

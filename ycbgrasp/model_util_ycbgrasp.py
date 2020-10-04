@@ -92,5 +92,5 @@ class ycbgraspDatasetConfig(object):
         grasp.append(0.0)
         grasp.append(heading_angle)
         grasp.append(0.922)
-        grasp.append(0.045)
+        grasp.append(0.13)
         return grasp
