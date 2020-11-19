@@ -158,6 +158,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     heading_label_one_hot.scatter_(2, heading_class_label.unsqueeze(-1), 1) # src==1 so it's *one-hot* (B,K,num_heading_bin)
     heading_residual_normalized_loss = huber_loss(torch.sum(end_points['heading_residuals_normalized']*heading_label_one_hot, -1) - heading_residual_normalized_label, delta=1.0) # (B,K)
     cuong = torch.sum(end_points['heading_residuals_normalized']*heading_label_one_hot, -1)
+    print('cuongg: ', end_points['heading_residuals_normalized'].shape)
     print('cuong: ', cuong.shape)
     print('Cuong0: ', heading_residual_normalized_label.shape)
     heading_residual_normalized_loss = torch.sum(heading_residual_normalized_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
@@ -166,7 +167,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     gt_width = torch.gather(end_points['width_label'], 1, object_assignment) # select (B,K) from (B,K2)
     print('Cuong1: ', gt_width.shape)
     print('Cuong2: ', end_points['width'].shape)
-    width_loss = huber_loss(end_points['width'] - gt_width, delta=1.0)
+    width_loss = huber_loss(torch.sum(end_points['width'], -1) - gt_width, delta=1.0)
     width_loss = torch.sum(width_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
 
 
