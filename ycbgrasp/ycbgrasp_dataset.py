@@ -88,7 +88,7 @@ class ycbgraspVotesDataset(Dataset):
         angle_residuals = np.zeros((MAX_NUM_GRASP,))
         size_classes = np.zeros((MAX_NUM_GRASP,))
         size_residuals = np.zeros((MAX_NUM_GRASP, 3))
-        widths = np.zeros((MAX_NUM_GRASP, 3))
+        widths = np.zeros((MAX_NUM_GRASP,))
         label_mask = np.zeros((MAX_NUM_GRASP))
         label_mask[0:grasps.shape[0]] = 1
 
@@ -124,7 +124,7 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['vote_label_mask'] = point_votes_mask.astype(np.int64)
         ret_dict['scan_idx'] = np.array(idx).astype(np.int64)
 
-        ret_dict['width_label'] = widths
+        ret_dict['width_label'] = widths.astype(np.float32)
         #ret_dict['quality_label'] = 0.06
 
         ret_dict['center_label'] = target_grasps.astype(np.float32)[:,0:3]
