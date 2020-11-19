@@ -31,7 +31,7 @@ def decode_scores(net, end_points, num_class, num_heading_bin, num_size_cluster,
     end_points['width'] = width
 
     quality = net_transposed[:,:,6:7] # (batch_size, num_proposal, 1)
-    end_points['quality'] = quality
+    end_points['quality'] = quality # or grasp quality or grasp score
 
 
     heading_scores = net_transposed[:,:,7:7+num_heading_bin]
@@ -73,9 +73,10 @@ class ProposalModule(nn.Module):
                 normalize_xyz=True
             )
     
-        # Grasp detection
-        # Objectness scores (2), center residual (3), width residual (1), quality residual (1)
-        # heading class+residual (num_heading_bin*2), viewpoint class (num_size_cluster)
+        # Grasp detection/proposal
+        # Objectness-> class (2), center-> residual (3), width-> residual (1), quality(score)-> residual (1)
+        # in-plane rotation-> class+residual (num_heading_bin*2), 
+        # viewpoint-> class (num_size_cluster)
         self.conv1 = torch.nn.Conv1d(128,128,1)
         self.conv2 = torch.nn.Conv1d(128,128,1)
         self.conv3 = torch.nn.Conv1d(128,2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class,1)
@@ -114,7 +115,7 @@ class ProposalModule(nn.Module):
         # --------- PROPOSAL GENERATION ---------
         net = F.relu(self.bn1(self.conv1(features))) 
         net = F.relu(self.bn2(self.conv2(net))) 
-        net = self.conv3(net) # (batch_size, 2+3+num_heading_bin*2+num_size_cluster*4, num_proposal)
+        net = self.conv3(net) # (batch_size, 2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class, num_proposal)
 
         end_points = decode_scores(net, end_points, self.num_class, self.num_heading_bin, self.num_size_cluster, self.mean_size_arr)
         return end_points
