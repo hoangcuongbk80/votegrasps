@@ -170,6 +170,8 @@ def compute_box_and_sem_cls_loss(end_points, config):
     width_loss = huber_loss(torch.sum(end_points['width'], -1) - gt_width, delta=1.0)
     width_loss = torch.sum(width_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
 
+    quality_loss = 0.01
+
 
     # Compute size loss
     size_class_label = torch.gather(end_points['size_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
