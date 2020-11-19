@@ -143,7 +143,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     center_loss = centroid_reg_loss1 + centroid_reg_loss2
 
     # Compute width loss
-    gt_width = torch.gather(end_points['width_label'], 1, object_assignment) # select (B,K) from (B,K2)
+    gt_width = torch.gather(end_points['width_label'], 1, object_assignment.unsqueeze(-1).repeat(1,1,1)) # select (B,K) from (B,K2)
     width_loss = huber_loss(end_points['width'] - gt_width, delta=1.0)
     width_loss = torch.sum(width_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
 
