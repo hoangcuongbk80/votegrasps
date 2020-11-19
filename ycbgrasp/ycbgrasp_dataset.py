@@ -103,7 +103,7 @@ class ycbgraspVotesDataset(Dataset):
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual
             size_classes[i] = size_class
-            widths[i] = angle_residual
+            widths[i] = 0.06
             #size_residuals[i] = size_residual
             grasp_sizes[i,:] = grasp_size
 
