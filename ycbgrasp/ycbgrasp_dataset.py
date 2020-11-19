@@ -122,6 +122,9 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['vote_label_mask'] = point_votes_mask.astype(np.int64)
         ret_dict['scan_idx'] = np.array(idx).astype(np.int64)
 
+        end_points['width_label'] = 0.06
+        end_points['quality_label'] = 0.06
+
         ret_dict['center_label'] = target_grasps.astype(np.float32)[:,0:3]
         ret_dict['heading_class_label'] = angle_classes.astype(np.int64)
         ret_dict['heading_residual_label'] = angle_residuals.astype(np.float32)

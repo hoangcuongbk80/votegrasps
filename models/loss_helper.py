@@ -142,6 +142,12 @@ def compute_box_and_sem_cls_loss(end_points, config):
         torch.sum(dist2*box_label_mask)/(torch.sum(box_label_mask)+1e-6)
     center_loss = centroid_reg_loss1 + centroid_reg_loss2
 
+    # Compute width loss
+    gt_width = torch.gather(end_points['width_label'], 1, object_assignment) # select (B,K) from (B,K2)
+    width_loss = huber_loss(end_points['width'] - gt_width, delta=1.0)
+    width_loss = torch.sum(width_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
+
+
     # Compute heading loss
     heading_class_label = torch.gather(end_points['heading_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
     criterion_heading_class = nn.CrossEntropyLoss(reduction='none')
@@ -182,7 +188,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     sem_cls_loss = torch.sum(sem_cls_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     #return center_loss, heading_class_loss, heading_residual_normalized_loss, size_class_loss, size_residual_normalized_loss, sem_cls_loss
-    return center_loss, heading_class_loss, heading_residual_normalized_loss, size_class_loss, sem_cls_loss
+    return center_loss, width_loss, quality_loss, heading_class_loss, heading_residual_normalized_loss, size_class_loss, sem_cls_loss
 
 def get_loss(end_points, config):
     """ Loss functions
@@ -225,10 +231,10 @@ def get_loss(end_points, config):
     end_points['neg_ratio'] = \
         torch.sum(objectness_mask.float())/float(total_num_proposal) - end_points['pos_ratio']
 
-    # Box loss and sem cls loss
+    # grasp loss and sem cls loss
     """ center_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, size_reg_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config) """
-    center_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, sem_cls_loss = \
+    center_loss, width_loss, quality_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config)
     end_points['center_loss'] = center_loss
     end_points['heading_cls_loss'] = heading_cls_loss
