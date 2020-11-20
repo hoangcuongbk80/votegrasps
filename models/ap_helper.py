@@ -16,7 +16,6 @@ from eval_det import eval_det_cls, eval_det_multiprocessing
 from eval_det import get_iou_obb
 from nms import nms_2d_faster, nms_3d_faster, nms_3d_faster_samecls
 from box_util import get_3d_box
-sys.path.append(os.path.join(ROOT_DIR, 'sunrgbd'))
 
 def flip_axis_to_camera(pc):
     ''' Flip X-right,Y-forward,Z-up to X-right,Y-down,Z-forward

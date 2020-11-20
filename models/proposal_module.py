@@ -126,14 +126,3 @@ class ProposalModule(nn.Module):
 
         end_points = decode_scores(net, end_points, self.num_class, self.num_heading_bin, self.num_viewpoint, self.mean_size_arr)
         return end_points
-
-if __name__=='__main__':
-    sys.path.append(os.path.join(ROOT_DIR, 'sunrgbd'))
-    from sunrgbd_detection_dataset import SunrgbdDetectionVotesDataset, DC
-    net = ProposalModule(DC.num_class, DC.num_heading_bin,
-        DC.num_viewpoint, DC.mean_size_arr,
-        128, 'seed_fps').cuda()
-    end_points = {'seed_xyz': torch.rand(8,1024,3).cuda()}
-    out = net(torch.rand(8,1024,3).cuda(), torch.rand(8,256,1024).cuda(), end_points)
-    for key in out:
-        print(key, out[key].shape)
