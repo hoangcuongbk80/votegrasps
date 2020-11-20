@@ -137,7 +137,7 @@ else:
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_heading_bin=DATASET_CONFIG.num_heading_bin,
-               num_size_cluster=DATASET_CONFIG.num_size_cluster,
+               num_size_cluster=DATASET_CONFIG.num_viewpoint,
                mean_size_arr=DATASET_CONFIG.mean_size_arr,
                num_proposal=FLAGS.num_target,
                input_feature_dim=num_input_channel,

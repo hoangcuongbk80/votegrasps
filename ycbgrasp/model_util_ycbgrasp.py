@@ -10,7 +10,7 @@ class ycbgraspDatasetConfig(object):
     def __init__(self):
         self.num_class = 10
         self.num_heading_bin = 12
-        self.num_size_cluster = 10
+        self.num_viewpoint = 10
 
         self.type2class={'007_tuna_fish_can':0, '008_pudding_box':1, '011_banana':2, '024_bowl':3, '025_mug':4,
                         '044_flat_screwdriver':5, '051_large_clamp':6, '055_baseball':7, '061_foam_brick':8, '065-h_cups':9}
@@ -28,8 +28,8 @@ class ycbgraspDatasetConfig(object):
                             '061_foam_brick': np.array([0.0396758, 0.0324347, 0.0310957]),
                             '065-h_cups': np.array([0.0458534, 0.0455691, 0.0385724])}
 
-        self.mean_size_arr = np.zeros((self.num_size_cluster, 3))
-        for i in range(self.num_size_cluster):
+        self.mean_size_arr = np.zeros((self.num_viewpoint, 3))
+        for i in range(self.num_viewpoint):
             self.mean_size_arr[i,:] = self.type_mean_size[self.class2type[i]]
 
     def size2class(self, size, type_name):
