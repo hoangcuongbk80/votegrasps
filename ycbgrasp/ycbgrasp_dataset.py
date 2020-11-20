@@ -103,7 +103,7 @@ class ycbgraspVotesDataset(Dataset):
             grasp_centers[i,:] = grasp_center
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual
-            size_classes[i] = viewpoint_class
+            viewpoint_classes[i] = viewpoint_class
             widths[i] = 0.06
             qualities[i] = 0.6
             #size_residuals[i] = size_residual
