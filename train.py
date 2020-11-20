@@ -137,7 +137,7 @@ else:
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_heading_bin=DATASET_CONFIG.num_heading_bin,
-               num_viewpoint=DATASET_CONFIG.num_viewpoint,
+               num_size_cluster=DATASET_CONFIG.num_viewpoint,
                mean_size_arr=DATASET_CONFIG.mean_size_arr,
                num_proposal=FLAGS.num_target,
                input_feature_dim=num_input_channel,
@@ -222,7 +222,6 @@ def train_one_epoch():
         for key in end_points:
             if 'loss' in key or 'acc' in key or 'ratio' in key:
                 if key not in stat_dict: stat_dict[key] = 0
-                print(key)
                 stat_dict[key] += end_points[key].item()
 
         batch_interval = 10
