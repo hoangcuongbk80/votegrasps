@@ -117,7 +117,7 @@ class ProposalModule(nn.Module):
         # --------- PROPOSAL GENERATION ---------
         net = self.sa(features)
         net = F.relu(self.bn1(self.conv1(net))) 
-        #net = F.relu(self.bn1(self.conv1(features))) 
+        net = F.relu(self.bn1(self.conv1(features))) 
         net = F.relu(self.bn2(self.conv2(net))) 
         net = self.conv3(net) # (batch_size, 2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class, num_proposal)
 
