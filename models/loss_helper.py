@@ -244,13 +244,15 @@ def get_loss(end_points, config):
     center_loss, width_loss, quality_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config)
     end_points['center_loss'] = center_loss
+    end_points['width_loss'] = width_loss
+    end_points['quality_loss'] = quality_loss
     end_points['heading_cls_loss'] = heading_cls_loss
     end_points['heading_reg_loss'] = heading_reg_loss
     end_points['size_cls_loss'] = size_cls_loss
     #end_points['size_reg_loss'] = size_reg_loss
     end_points['sem_cls_loss'] = sem_cls_loss
     #box_loss = center_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*size_cls_loss + size_reg_loss
-    box_loss = center_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*size_cls_loss
+    box_loss = center_loss + width_loss + quality_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*size_cls_loss
     end_points['box_loss'] = box_loss
 
     # Final loss function
