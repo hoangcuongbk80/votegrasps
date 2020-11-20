@@ -1,1 +1,0 @@
-Now the file has more content!object x y z rx ry rz quality dofValue[2, 'cuong', 'Tra', 9]
