@@ -86,7 +86,7 @@ class ycbgraspVotesDataset(Dataset):
         grasp_sizes = np.zeros((MAX_NUM_GRASP, 3))
         angle_classes = np.zeros((MAX_NUM_GRASP,))
         angle_residuals = np.zeros((MAX_NUM_GRASP,))
-        size_classes = np.zeros((MAX_NUM_GRASP,))
+        viewpoint_classes = np.zeros((MAX_NUM_GRASP,))
         size_residuals = np.zeros((MAX_NUM_GRASP, 3))
         widths = np.zeros((MAX_NUM_GRASP,))
         qualities = np.zeros((MAX_NUM_GRASP,))
@@ -99,11 +99,11 @@ class ycbgraspVotesDataset(Dataset):
             grasp_center = grasp[0:3]
             angle_class, angle_residual = DC.angle2class(grasp[6]) 
             grasp_size = grasp[3:6]*2
-            size_class, size_residual = DC.size2class(grasp_sizes, DC.class2type[semantic_class])
+            viewpoint_class, size_residual = DC.size2class(grasp_sizes, DC.class2type[semantic_class])
             grasp_centers[i,:] = grasp_center
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual
-            size_classes[i] = size_class
+            size_classes[i] = viewpoint_class
             widths[i] = 0.06
             qualities[i] = 0.6
             #size_residuals[i] = size_residual
@@ -132,7 +132,7 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['center_label'] = target_grasps.astype(np.float32)[:,0:3]
         ret_dict['heading_class_label'] = angle_classes.astype(np.int64)
         ret_dict['heading_residual_label'] = angle_residuals.astype(np.float32)
-        ret_dict['size_class_label'] = size_classes.astype(np.int64)
+        ret_dict['viewpoint_class_label'] = viewpoint_classes.astype(np.int64)
         ret_dict['size_residual_label'] = size_residuals.astype(np.float32)
         target_grasps_semcls = np.zeros((MAX_NUM_GRASP))
         target_grasps_semcls[0:grasps.shape[0]] = grasps[:,-1] # from 0 to 9
@@ -206,4 +206,4 @@ if __name__=='__main__':
     viz_votes(sample['point_clouds'], sample['vote_label'], sample['vote_label_mask'])
     viz_obb(sample['point_clouds'], sample['center_label'], sample['box_label_mask'],
         sample['heading_class_label'], sample['heading_residual_label'],
-        sample['size_class_label'], sample['size_residual_label'])
+        sample['viewpoint_class_label'], sample['size_residual_label'])

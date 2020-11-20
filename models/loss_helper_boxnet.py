@@ -72,7 +72,7 @@ def get_loss(end_points, config):
                 sem_cls_scores, #seed_logits,#
                 center_label,
                 heading_class_label, heading_residual_label,
-                size_class_label, size_residual_label,
+                viewpoint_class_label, size_residual_label,
                 sem_cls_label,
                 box_label_mask,
                 vote_label, vote_label_mask

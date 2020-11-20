@@ -158,7 +158,7 @@ class ScannetDetectionDataset(Dataset):
         ret_dict['center_label'] = target_bboxes.astype(np.float32)[:,0:3]
         ret_dict['heading_class_label'] = angle_classes.astype(np.int64)
         ret_dict['heading_residual_label'] = angle_residuals.astype(np.float32)
-        ret_dict['size_class_label'] = size_classes.astype(np.int64)
+        ret_dict['viewpoint_class_label'] = size_classes.astype(np.int64)
         ret_dict['size_residual_label'] = size_residuals.astype(np.float32)
         target_bboxes_semcls = np.zeros((MAX_NUM_OBJ))                                
         target_bboxes_semcls[0:instance_bboxes.shape[0]] = \
@@ -220,5 +220,5 @@ if __name__=='__main__':
         viz_obb(pc=example['point_clouds'], label=example['center_label'],
             mask=example['box_label_mask'],
             angle_classes=None, angle_residuals=None,
-            size_classes=example['size_class_label'], size_residuals=example['size_residual_label'],
+            size_classes=example['viewpoint_class_label'], size_residuals=example['size_residual_label'],
             name=i_example)
