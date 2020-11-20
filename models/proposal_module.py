@@ -14,6 +14,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'pointnet2'))
 from pointnet2_modules import PointnetSAModuleVotes
 import pointnet2_utils
+from CGNL import SpatialCGNL
 
 def decode_scores(net, end_points, num_class, num_heading_bin, num_size_cluster, mean_size_arr):
     net_transposed = net.transpose(2,1) # (batch_size, 1024, ..)
@@ -82,6 +83,7 @@ class ProposalModule(nn.Module):
         self.conv3 = torch.nn.Conv1d(128,2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class,1)
         self.bn1 = torch.nn.BatchNorm1d(128)
         self.bn2 = torch.nn.BatchNorm1d(128)
+        self.sa = SpatialCGNL(128, int(128 / 2), use_scale=False, groups=4)
 
     def forward(self, xyz, features, end_points):
         """
@@ -113,7 +115,9 @@ class ProposalModule(nn.Module):
         end_points['aggregated_vote_inds'] = sample_inds # (batch_size, num_proposal,) # should be 0,1,2,...,num_proposal
 
         # --------- PROPOSAL GENERATION ---------
-        net = F.relu(self.bn1(self.conv1(features))) 
+        net = self.sa(features)
+        net = F.relu(self.bn1(self.conv1(net))) 
+        #net = F.relu(self.bn1(self.conv1(features))) 
         net = F.relu(self.bn2(self.conv2(net))) 
         net = self.conv3(net) # (batch_size, 2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class, num_proposal)
 
