@@ -117,12 +117,13 @@ def compute_box_and_sem_cls_loss(end_points, config):
         center_loss
         heading_cls_loss
         heading_reg_loss
-        viewpoint_cls_loss
+        size_cls_loss
+        size_reg_loss
         sem_cls_loss
     """
 
     num_heading_bin = config.num_heading_bin
-    num_viewpoint = config.num_viewpoint
+    num_size_cluster = config.num_size_cluster
     num_class = config.num_class
     mean_size_arr = config.mean_size_arr
 
@@ -170,10 +171,10 @@ def compute_box_and_sem_cls_loss(end_points, config):
     quality_loss = torch.sum(quality_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     # Compute size loss
-    viewpoint_class_label = torch.gather(end_points['viewpoint_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
-    criterion_viewpoint_class = nn.CrossEntropyLoss(reduction='none')
-    viewpoint_class_loss = criterion_viewpoint_class(end_points['viewpoint_scores'].transpose(2,1), viewpoint_class_label) # (B,K)
-    viewpoint_class_loss = torch.sum(viewpoint_class_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
+    size_class_label = torch.gather(end_points['size_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
+    criterion_size_class = nn.CrossEntropyLoss(reduction='none')
+    size_class_loss = criterion_size_class(end_points['size_scores'].transpose(2,1), size_class_label) # (B,K)
+    size_class_loss = torch.sum(size_class_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     #size_residual_label = torch.gather(end_points['size_residual_label'], 1, object_assignment.unsqueeze(-1).repeat(1,1,3)) # select (B,K,3) from (B,K2,3)
     #size_label_one_hot = torch.cuda.FloatTensor(batch_size, size_class_label.shape[1], num_size_cluster).zero_()
@@ -194,7 +195,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     sem_cls_loss = torch.sum(sem_cls_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     #return center_loss, heading_class_loss, heading_residual_normalized_loss, size_class_loss, size_residual_normalized_loss, sem_cls_loss
-    return center_loss, width_loss, quality_loss, heading_class_loss, heading_residual_normalized_loss, viewpoint_class_loss, sem_cls_loss
+    return center_loss, width_loss, quality_loss, heading_class_loss, heading_residual_normalized_loss, size_class_loss, sem_cls_loss
 
 def get_loss(end_points, config):
     """ Loss functions
@@ -205,11 +206,11 @@ def get_loss(end_points, config):
                 seed_xyz, seed_inds, vote_xyz,
                 center,
                 heading_scores, heading_residuals_normalized,
-                viewpoint_scores,
+                size_scores, size_residuals_normalized,
                 sem_cls_scores, #seed_logits,#
                 center_label,
                 heading_class_label, heading_residual_label,
-                viewpoint_class_label,
+                size_class_label, size_residual_label,
                 sem_cls_label,
                 box_label_mask,
                 vote_label, vote_label_mask
@@ -240,18 +241,18 @@ def get_loss(end_points, config):
     # grasp loss and sem cls loss
     """ center_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, size_reg_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config) """
-    center_loss, width_loss, quality_loss, heading_cls_loss, heading_reg_loss, viewpoint_cls_loss, sem_cls_loss = \
+    center_loss, width_loss, quality_loss, heading_cls_loss, heading_reg_loss, size_cls_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config)
     end_points['center_loss'] = center_loss
     end_points['width_loss'] = width_loss
     end_points['quality_loss'] = quality_loss
     end_points['heading_cls_loss'] = heading_cls_loss
     end_points['heading_reg_loss'] = heading_reg_loss
-    end_points['viewpoint_cls_loss'] = viewpoint_cls_loss
+    end_points['size_cls_loss'] = size_cls_loss
     #end_points['size_reg_loss'] = size_reg_loss
     end_points['sem_cls_loss'] = sem_cls_loss
     #box_loss = center_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*size_cls_loss + size_reg_loss
-    box_loss = center_loss + width_loss + quality_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*viewpoint_cls_loss
+    box_loss = center_loss + quality_loss + width_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*size_cls_loss
     end_points['box_loss'] = box_loss
 
     # Final loss function

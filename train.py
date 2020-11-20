@@ -137,7 +137,7 @@ else:
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_heading_bin=DATASET_CONFIG.num_heading_bin,
-               num_size_cluster=DATASET_CONFIG.num_viewpoint,
+               num_size_cluster=DATASET_CONFIG.num_size_cluster,
                mean_size_arr=DATASET_CONFIG.mean_size_arr,
                num_proposal=FLAGS.num_target,
                input_feature_dim=num_input_channel,
@@ -239,7 +239,7 @@ def evaluate_one_epoch():
         class2type_map=DATASET_CONFIG.class2type)
     net.eval() # set model to eval mode (for bn and dp)
     for batch_idx, batch_data_label in enumerate(TEST_DATALOADER):
-        if batch_idx % 10 == 0: #10
+        if batch_idx % 10 == 0:
             print('Eval batch: %d'%(batch_idx))
         for key in batch_data_label:
             batch_data_label[key] = batch_data_label[key].to(device)
