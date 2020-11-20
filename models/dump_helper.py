@@ -115,7 +115,6 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
     gt_heading_class = end_points['heading_class_label'].cpu().numpy() # B,K2
     gt_heading_residual = end_points['heading_residual_label'].cpu().numpy() # B,K2
     gt_size_class = end_points['viewpoint_class_label'].cpu().numpy() # B,K2
-    gt_size_residual = end_points['size_residual_label'].cpu().numpy() # B,K2,3
     objectness_label = end_points['objectness_label'].detach().cpu().numpy() # (B,K,)
     objectness_mask = end_points['objectness_mask'].detach().cpu().numpy() # (B,K,)
 
@@ -132,7 +131,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
         for j in range(gt_center.shape[1]):
             if gt_mask[i,j] == 0: continue
             obb = config.param2obb(gt_center[i,j,0:3], gt_heading_class[i,j], gt_heading_residual[i,j],
-                            gt_size_class[i,j], gt_size_residual[i,j])
+                            gt_size_class[i,j], 0.01)
             obbs.append(obb)
         if len(obbs)>0:
             obbs = np.vstack(tuple(obbs)) # (num_gt_objects, 7)

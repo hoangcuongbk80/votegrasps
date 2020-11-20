@@ -55,7 +55,6 @@ class ycbgraspVotesDataset(Dataset):
             heading_class_label: (MAX_NUM_GRASP,) with int values in 0,...,NUM_HEADING_BIN-1
             heading_residual_label: (MAX_NUM_GRASP,)
             size_classe_label: (MAX_NUM_GRASP,) with int values in 0,...,NUM_SIZE_CLUSTER
-            size_residual_label: (MAX_NUM_GRASP,3)
             sem_cls_label: (MAX_NUM_GRASP,) semantic class index
             box_label_mask: (MAX_NUM_GRASP) as 0/1 with 1 indicating a unique box
             vote_label: (N,9) with votes XYZ (3 votes: X1Y1Z1, X2Y2Z2, X3Y3Z3)
@@ -87,7 +86,6 @@ class ycbgraspVotesDataset(Dataset):
         angle_classes = np.zeros((MAX_NUM_GRASP,))
         angle_residuals = np.zeros((MAX_NUM_GRASP,))
         viewpoint_classes = np.zeros((MAX_NUM_GRASP,))
-        size_residuals = np.zeros((MAX_NUM_GRASP, 3))
         widths = np.zeros((MAX_NUM_GRASP,))
         qualities = np.zeros((MAX_NUM_GRASP,))
         label_mask = np.zeros((MAX_NUM_GRASP))
@@ -106,7 +104,6 @@ class ycbgraspVotesDataset(Dataset):
             viewpoint_classes[i] = viewpoint_class
             widths[i] = 0.06
             qualities[i] = 0.6
-            #size_residuals[i] = size_residual
             grasp_sizes[i,:] = grasp_size
 
         target_grasps_mask = label_mask 
@@ -133,7 +130,6 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['heading_class_label'] = angle_classes.astype(np.int64)
         ret_dict['heading_residual_label'] = angle_residuals.astype(np.float32)
         ret_dict['viewpoint_class_label'] = viewpoint_classes.astype(np.int64)
-        ret_dict['size_residual_label'] = size_residuals.astype(np.float32)
         target_grasps_semcls = np.zeros((MAX_NUM_GRASP))
         target_grasps_semcls[0:grasps.shape[0]] = grasps[:,-1] # from 0 to 9
         ret_dict['sem_cls_label'] = target_grasps_semcls.astype(np.int64)

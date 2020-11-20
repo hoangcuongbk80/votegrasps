@@ -181,7 +181,7 @@ def parse_groundtruths(end_points, config_dict):
     Args:
         end_points: dict
             {center_label, heading_class_label, heading_residual_label,
-            viewpoint_class_label, size_residual_label, sem_cls_label,
+            viewpoint_class_label, sem_cls_label,
             box_label_mask}
         config_dict: dict
             {dataset_config}
@@ -196,7 +196,6 @@ def parse_groundtruths(end_points, config_dict):
     heading_class_label = end_points['heading_class_label']
     heading_residual_label = end_points['heading_residual_label']
     viewpoint_class_label = end_points['viewpoint_class_label']
-    size_residual_label = end_points['size_residual_label']
     box_label_mask = end_points['box_label_mask']
     sem_cls_label = end_points['sem_cls_label']
     bsize = center_label.shape[0]
@@ -208,7 +207,7 @@ def parse_groundtruths(end_points, config_dict):
         for j in range(K2):
             if box_label_mask[i,j] == 0: continue
             heading_angle = config_dict['dataset_config'].class2angle(heading_class_label[i,j].detach().cpu().numpy(), heading_residual_label[i,j].detach().cpu().numpy())
-            box_size = config_dict['dataset_config'].class2size(int(viewpoint_class_label[i,j].detach().cpu().numpy()), size_residual_label[i,j].detach().cpu().numpy())
+            box_size = config_dict['dataset_config'].class2size(int(viewpoint_class_label[i,j].detach().cpu().numpy()), 0.01)
             corners_3d_upright_camera = get_3d_box(box_size, heading_angle, gt_center_upright_camera[i,j,:])
             gt_corners_3d_upright_camera[i,j] = corners_3d_upright_camera
 
