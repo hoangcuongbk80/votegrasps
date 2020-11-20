@@ -222,6 +222,7 @@ def train_one_epoch():
         for key in end_points:
             if 'loss' in key or 'acc' in key or 'ratio' in key:
                 if key not in stat_dict: stat_dict[key] = 0
+                print(key)
                 stat_dict[key] += end_points[key].item()
 
         batch_interval = 10
