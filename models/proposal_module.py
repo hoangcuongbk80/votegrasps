@@ -50,12 +50,12 @@ def decode_scores(net, end_points, num_class, num_heading_bin, num_viewpoint, me
 
 
 class ProposalModule(nn.Module):
-    def __init__(self, num_class, num_heading_bin, num_size_cluster, mean_size_arr, num_proposal, sampling, seed_feat_dim=256):
+    def __init__(self, num_class, num_heading_bin, num_viewpoint, mean_size_arr, num_proposal, sampling, seed_feat_dim=256):
         super().__init__() 
 
         self.num_class = num_class
         self.num_heading_bin = num_heading_bin
-        self.num_viewpoint = num_size_cluster
+        self.num_viewpoint = num_viewpoint
         self.mean_size_arr = mean_size_arr
         self.num_proposal = num_proposal
         self.sampling = sampling
