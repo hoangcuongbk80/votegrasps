@@ -130,10 +130,7 @@ MODEL = importlib.import_module(FLAGS.model) # import network module
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 num_input_channel = int(FLAGS.use_color)*3 + int(not FLAGS.no_height)*1
 
-if FLAGS.model == 'boxnet':
-    Detector = MODEL.BoxNet
-else:
-    Detector = MODEL.VoteNet
+Detector = MODEL.VoteNet
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_heading_bin=DATASET_CONFIG.num_heading_bin,
