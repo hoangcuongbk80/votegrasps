@@ -123,7 +123,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     """
 
     num_heading_bin = config.num_heading_bin
-    num_size_cluster = config.num_size_cluster
+    num_size_cluster = config.num_viewpoint
     num_class = config.num_class
     mean_size_arr = config.mean_size_arr
 
