@@ -47,7 +47,7 @@ def parse_predictions(end_points, config_dict):
     Args:
         end_points: dict
             {point_clouds, center, heading_scores, heading_residuals,
-            size_scores, size_residuals, sem_cls_scores}
+            viewpoint_scores, sem_cls_scores}
         config_dict: dict
             {dataset_config, remove_empty_box, use_3d_nms, nms_iou,
             use_old_type_nms, conf_thresh, per_class_proposal}
@@ -63,7 +63,7 @@ def parse_predictions(end_points, config_dict):
     pred_heading_residual = torch.gather(end_points['heading_residuals'], 2,
         pred_heading_class.unsqueeze(-1)) # B,num_proposal,1
     pred_heading_residual.squeeze_(2)
-    pred_size_class = torch.argmax(end_points['size_scores'], -1) # B,num_proposal
+    pred_size_class = torch.argmax(end_points['viewpoint_scores'], -1) # B,num_proposal
     #pred_size_residual = torch.gather(end_points['size_residuals'], 2,
     #    pred_size_class.unsqueeze(-1).unsqueeze(-1).repeat(1,1,1,3)) # B,num_proposal,1,3
     #pred_size_residual.squeeze_(2)

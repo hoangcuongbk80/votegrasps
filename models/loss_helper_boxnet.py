@@ -68,7 +68,7 @@ def get_loss(end_points, config):
                 seed_xyz, seed_inds,
                 center,
                 heading_scores, heading_residuals_normalized,
-                size_scores, size_residuals_normalized,
+                viewpoint_scores, size_residuals_normalized,
                 sem_cls_scores, #seed_logits,#
                 center_label,
                 heading_class_label, heading_residual_label,

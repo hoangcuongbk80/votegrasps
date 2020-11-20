@@ -170,7 +170,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     # Compute viewpoint loss
     viewpoint_class_labell = torch.gather(end_points['viewpoint_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
     criterion_viewpoint_class = nn.CrossEntropyLoss(reduction='none')
-    viewpoint_class_loss = criterion_viewpoint_class(end_points['size_scores'].transpose(2,1), viewpoint_class_labell) # (B,K)
+    viewpoint_class_loss = criterion_viewpoint_class(end_points['viewpoint_scores'].transpose(2,1), viewpoint_class_labell) # (B,K)
     viewpoint_class_loss = torch.sum(viewpoint_class_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     # 3.4 Semantic cls loss
@@ -190,7 +190,7 @@ def get_loss(end_points, config):
                 seed_xyz, seed_inds, vote_xyz,
                 center,
                 heading_scores, heading_residuals_normalized,
-                size_scores,
+                viewpoint_scores,
                 sem_cls_scores, #seed_logits,#
                 center_label,
                 heading_class_label, heading_residual_label,
