@@ -239,7 +239,7 @@ def evaluate_one_epoch():
         class2type_map=DATASET_CONFIG.class2type)
     net.eval() # set model to eval mode (for bn and dp)
     for batch_idx, batch_data_label in enumerate(TEST_DATALOADER):
-        if batch_idx % 10 == 0:
+        if batch_idx % 1 == 0: #10
             print('Eval batch: %d'%(batch_idx))
         for key in batch_data_label:
             batch_data_label[key] = batch_data_label[key].to(device)
