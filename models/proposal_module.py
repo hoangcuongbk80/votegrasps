@@ -41,8 +41,8 @@ def decode_scores(net, end_points, num_class, num_heading_bin, num_viewpoint, me
     end_points['heading_residuals_normalized'] = heading_residuals_normalized # Bxnum_proposalxnum_heading_bin (should be -1 to 1)
     end_points['heading_residuals'] = heading_residuals_normalized * (np.pi/num_heading_bin) # Bxnum_proposalxnum_heading_bin
 
-    size_scores = net_transposed[:,:,7+num_heading_bin*2:7+num_heading_bin*2+num_viewpoint]
-    end_points['size_scores'] = size_scores
+    viewpoint_scores = net_transposed[:,:,7+num_heading_bin*2:7+num_heading_bin*2+num_viewpoint]
+    end_points['size_scores'] = viewpoint_scores
 
     sem_cls_scores = net_transposed[:,:,7+num_heading_bin*2+num_viewpoint:] # Bxnum_proposalx10
     end_points['sem_cls_scores'] = sem_cls_scores
