@@ -230,61 +230,8 @@ def train_one_epoch():
                 log_string('mean %s: %f'%(key, stat_dict[key]/batch_interval))
                 stat_dict[key] = 0
 
-def evaluate_one_epoch():
-    stat_dict = {} # collect statistics
-    ap_calculator = APCalculator(ap_iou_thresh=FLAGS.ap_iou_thresh,
-        class2type_map=DATASET_CONFIG.class2type)
-    net.eval() # set model to eval mode (for bn and dp)
-    for batch_idx, batch_data_label in enumerate(TEST_DATALOADER):
-        if batch_idx % 10 == 0:
-            print('Eval batch: %d'%(batch_idx))
-        for key in batch_data_label:
-            batch_data_label[key] = batch_data_label[key].to(device)
-        
-        # Forward pass
-        inputs = {'point_clouds': batch_data_label['point_clouds']}
-        with torch.no_grad():
-            end_points = net(inputs)
-
-        # Compute loss
-        for key in batch_data_label:
-            assert(key not in end_points)
-            end_points[key] = batch_data_label[key]
-        loss, end_points = criterion(end_points, DATASET_CONFIG)
-
-        # Accumulate statistics and print out
-        for key in end_points:
-            if 'loss' in key or 'acc' in key or 'ratio' in key:
-                if key not in stat_dict: stat_dict[key] = 0
-                stat_dict[key] += end_points[key].item()
-
-        batch_pred_map_cls = parse_predictions(end_points, CONFIG_DICT) 
-        batch_gt_map_cls = parse_groundtruths(end_points, CONFIG_DICT) 
-        ap_calculator.step(batch_pred_map_cls, batch_gt_map_cls)
-
-        # Dump evaluation results for visualization
-        if FLAGS.dump_results and batch_idx == 0 and EPOCH_CNT %10 == 0:
-            MODEL.dump_results(end_points, DUMP_DIR, DATASET_CONFIG) 
-
-    # Log statistics
-    TEST_VISUALIZER.log_scalars({key:stat_dict[key]/float(batch_idx+1) for key in stat_dict},
-        (EPOCH_CNT+1)*len(TRAIN_DATALOADER)*BATCH_SIZE)
-    for key in sorted(stat_dict.keys()):
-        log_string('eval mean %s: %f'%(key, stat_dict[key]/(float(batch_idx+1))))
-
-    # Evaluate average precision
-    metrics_dict = ap_calculator.compute_metrics()
-    for key in metrics_dict:
-        log_string('eval %s: %f'%(key, metrics_dict[key]))
-
-    mean_loss = stat_dict['loss']/float(batch_idx+1)
-    return mean_loss
-
-
 def train(start_epoch):
     global EPOCH_CNT 
-    min_loss = 1e10
-    loss = 0
     for epoch in range(start_epoch, MAX_EPOCH):
         EPOCH_CNT = epoch
         log_string('**** EPOCH %03d ****' % (epoch))
@@ -295,12 +242,9 @@ def train(start_epoch):
         # REF: https://github.com/pytorch/pytorch/issues/5059
         np.random.seed()
         train_one_epoch()
-        if EPOCH_CNT == 0 or EPOCH_CNT % 10 == 9: # Eval every 10 epochs
-            loss = evaluate_one_epoch()
         # Save checkpoint
         save_dict = {'epoch': epoch+1, # after training one epoch, the start_epoch should be epoch+1
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    'loss': loss,
+                    'optimizer_state_dict': optimizer.state_dict()
                     }
         try: # with nn.DataParallel() the net is added as a submodule of DataParallel
             save_dict['model_state_dict'] = net.module.state_dict()

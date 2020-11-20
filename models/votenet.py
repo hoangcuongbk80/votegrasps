@@ -1,13 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# 
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-""" Deep hough voting network for 3D object detection in point clouds.
-
-Author: Charles R. Qi and Or Litany
-"""
-
 import torch
 import torch.nn as nn
 import numpy as np
@@ -25,7 +15,7 @@ from loss_helper import get_loss
 
 class VoteNet(nn.Module):
     r"""
-        A deep neural network for 3D object detection with end-to-end optimizable hough voting.
+        A deep neural network for grasp detection.
 
         Parameters
         ----------

@@ -1,16 +1,5 @@
-""" Dataset for grasping on YCB objects (with support of vote supervision).
+""" Dataset for grasping on YCB objects. """
 
-A oriented bounding box is parameterized by (cx,cy,cz), (l,w,h) -- (dx,dy,dz) in upright depth coord
-(Z is up, Y is forward, X is right ward), heading angle (from +X rotating to -Y) and semantic class
-
-Point clouds are in **upright_depth coordinate (X right, Y forward, Z upward)**
-Return heading class, heading residual, size class and size residual for 3D bounding boxes.
-Oriented bounding box is parameterized by (cx,cy,cz), (l,w,h), heading_angle and semantic class label.
-(cx,cy,cz) is in upright depth coordinate
-(l,h,w) are *half length* of the object sizes
-The heading angle is a rotation rad from +X rotating towards -Y. (+X is 0, -Y is pi/2)
-
-"""
 import os
 import sys
 import numpy as np
