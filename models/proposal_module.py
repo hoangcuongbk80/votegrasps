@@ -118,12 +118,12 @@ class ProposalModule(nn.Module):
 
         feature_dim = features.shape[1]
         batch_size = features.shape[0]
-        features_c = features.contiguous().view(batch_size, feature_dim, 16, 16)
-        net_c = self.sa(features_c)
+        features = features.contiguous().view(batch_size, feature_dim, 16, 16)
+        net = self.sa(features)
 
         # --------- GRASP/PROPOSAL GENERATION ---------
-        #net = F.relu(self.bn1(self.conv1(net))) 
-        net = F.relu(self.bn1(self.conv1(features))) 
+        net = F.relu(self.bn1(self.conv1(net))) 
+        #net = F.relu(self.bn1(self.conv1(features))) 
         net = F.relu(self.bn2(self.conv2(net))) 
         net = self.conv3(net) # (batch_size, 2+3+1+1+num_heading_bin*2+num_size_cluster+self.num_class, num_proposal)
 
