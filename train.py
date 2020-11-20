@@ -1,15 +1,8 @@
-""" Training routine for grasp detection with YCB objects.
+""" Training for grasp detection with YCB objects.
 
 Sample usage:
 python grasp_train.py --dataset ycbgrasp --log_dir log_ycbgrasp
 
-To use Tensorboard:
-At server:
-    python -m tensorboard.main --logdir=<log_dir_name> --port=6006
-At local machine:
-    ssh -L 1237:localhost:6006 <server_name>
-Then go to local browser and type:
-    localhost:1237
 """
 
 import os
@@ -32,7 +25,6 @@ sys.path.append(os.path.join(ROOT_DIR, 'pointnet2'))
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 from pytorch_utils import BNMomentumScheduler
 from tf_visualizer import Visualizer as TfVisualizer
-from ap_helper import APCalculator, parse_predictions, parse_groundtruths
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', default='votenet', help='Model file name [default: votenet]')
