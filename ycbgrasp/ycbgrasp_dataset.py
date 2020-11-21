@@ -15,7 +15,7 @@ from model_util_ycbgrasp import ycbgraspDatasetConfig
 
 DC = ycbgraspDatasetConfig() # dataset specific config
 MAX_NUM_GRASP = 64 # maximum number of grasps allowed per scene
-MEAN_COLOR_RGB = np.array([0.5,0.5,0.5]) # sunrgbd color is in 0~1
+MEAN_COLOR_RGB = np.array([0.5,0.5,0.5])
 
 class ycbgraspVotesDataset(Dataset):
     def __init__(self, split_set='train', num_points=20000,
@@ -86,7 +86,7 @@ class ycbgraspVotesDataset(Dataset):
             grasp_center = grasp[0:3]
             angle_class, angle_residual = DC.angle2class(grasp[6]) 
             grasp_size = grasp[3:6]*2
-            viewpoint_class, size_residual = DC.size2class(grasp_sizes, DC.class2type[semantic_class])
+            viewpoint_class = 8
             grasp_centers[i,:] = grasp_center
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual

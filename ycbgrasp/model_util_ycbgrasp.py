@@ -18,16 +18,6 @@ class ycbgraspDatasetConfig(object):
         self.type2onehotclass={'007_tuna_fish_can':0, '008_pudding_box':1, '011_banana':2, '024_bowl':3, '025_mug':4,
                             '044_flat_screwdriver':5, '051_large_clamp':6, '055_baseball':7, '061_foam_brick':8, '065-h_cups':9}
 
-    def size2class(self, size, type_name):
-        ''' Convert 3D box size (l,w,h) to size class and size residual '''
-        size_class = self.type2class[type_name]
-        size_residual = 0
-        return size_class, size_residual
-    
-    def class2size(self, pred_cls, residual):
-        ''' Inverse function to size2class '''
-        mean_size = 0
-        return mean_size + residual
     
     def angle2class(self, angle):
         ''' Convert continuous angle to discrete class
@@ -56,15 +46,6 @@ class ycbgraspDatasetConfig(object):
         if to_label_format and angle>np.pi:
             angle = angle - 2*np.pi
         return angle
-
-    def param2obb(self, center, angle_class, angle_residual, size_class, size_residual):
-        angle = self.class2angle(angle_class, angle_residual)
-        box_size = self.class2size(int(size_class), size_residual)
-        obb = np.zeros((7,))
-        obb[0:3] = center
-        obb[3:6] = box_size
-        obb[6] = angle*-1
-        return obb
 
     def param2grasp(self, sem_cls, center, viewpoint_class, angle_class, angle_residual, quality, width):
         angle = self.class2angle(angle_class, angle_residual) * 180/np.pi

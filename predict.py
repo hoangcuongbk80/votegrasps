@@ -12,7 +12,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', default='ycbgrasp', help='Dataset: ycbgrasp [default: ycbgrasp]')
 parser.add_argument('--input', default='points.ply', help='Input: pointcloud [default: points.ply]')
-parser.add_argument('--num_point', type=int, default=20000, help='Point Number [default: 20000]')
+parser.add_argument('--num_point', type=int, default=50000, help='Point Number [default: 50000]')
 FLAGS = parser.parse_args()
 
 import torch
