@@ -45,7 +45,7 @@ def compute_vote_loss(end_points):
     print('cuong0:', seed_gt_votes.shape)
     print('cuong1:', end_points['seed_xyz'].shape)
     print('cuong2:', end_points['seed_xyz'].repeat(1,1,3).shape)
-    seed_gt_votes += end_points['seed_xyz'].repeat(1,1,3)
+    seed_gt_votes += end_points['seed_xyz'].repeat(1,1,3*GT_VOTE_FACTOR)
 
     # Compute the min of min of distance
     vote_xyz_reshape = vote_xyz.view(batch_size*num_seed, -1, 3) # from B,num_seed*vote_factor,3 to B*num_seed,vote_factor,3
