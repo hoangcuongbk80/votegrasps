@@ -1,9 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# 
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-""" Demo of using VoteNet 3D object detector to detect objects from a point cloud.
+""" Predict/generate grasps from a point cloud using VoteGrasp.
 """
 
 import os
@@ -46,7 +41,7 @@ if __name__=='__main__':
     if FLAGS.dataset == 'ycbgrasp':
         sys.path.append(os.path.join(ROOT_DIR, 'ycbgrasp'))
         from ycbgrasp_dataset import DC # dataset config
-        checkpoint_path = os.path.join(demo_dir, 'pretrained_votenet_on_ycbgrasp.tar')
+        checkpoint_path = os.path.join(demo_dir, 'pretrained_votegrasp_on_ycbgrasp.tar')
         pc_path = os.path.join(demo_dir, 'input_pc_ycbgrasp.ply')
     else:
         print('Unkown dataset %s. Exiting.'%(DATASET))
@@ -57,9 +52,9 @@ if __name__=='__main__':
         'conf_thresh': 0.5, 'dataset_config': DC}
 
     # Init the model and optimzier
-    MODEL = importlib.import_module('votenet') # import network module
+    MODEL = importlib.import_module('votegrasp') # import network module
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    net = MODEL.VoteNet(num_proposal=256, input_feature_dim=1, vote_factor=1,
+    net = MODEL.VoteGrasp(num_proposal=256, input_feature_dim=1, vote_factor=1,
         sampling='seed_fps', num_class=DC.num_class,
         num_angle_bin=DC.num_angle_bin,
         num_size_cluster=DC.num_size_cluster,

@@ -13,7 +13,7 @@ from dump_helper import dump_results
 from loss_helper import get_loss
 
 
-class VoteNet(nn.Module):
+class VoteGrasp(nn.Module):
     r"""
         A deep neural network for grasp detection.
 
@@ -100,7 +100,7 @@ if __name__=='__main__':
     from loss_helper import get_loss
 
     # Define model
-    model = VoteNet(10,12,10,np.random.random((10,3))).cuda()
+    model = VoteGrasp(10,12,10,np.random.random((10,3))).cuda()
     
     try:
         # Define dataset

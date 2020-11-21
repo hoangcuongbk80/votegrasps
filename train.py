@@ -27,7 +27,7 @@ from pytorch_utils import BNMomentumScheduler
 from tf_visualizer import Visualizer as TfVisualizer
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', default='votenet', help='Model file name [default: votenet]')
+parser.add_argument('--model', default='votegrasp', help='Model file name [default: votegrasp]')
 parser.add_argument('--dataset', default='ycbgrasp', help='Dataset name. ycbgrasp. [default: ycbgrasp]')
 parser.add_argument('--checkpoint_path', default=None, help='Model checkpoint path [default: None]')
 parser.add_argument('--log_dir', default='log', help='Dump dir to save model checkpoint [default: log]')
@@ -122,7 +122,7 @@ MODEL = importlib.import_module(FLAGS.model) # import network module
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 num_input_channel = int(FLAGS.use_color)*3 + int(not FLAGS.no_height)*1
 
-Detector = MODEL.VoteNet
+Detector = MODEL.VoteGrasp
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_angle_bin=DATASET_CONFIG.num_angle_bin,
