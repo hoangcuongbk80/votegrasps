@@ -29,14 +29,8 @@ def compute_vote_loss(end_points):
             
     Overall idea:
         If the seed point belongs to an object (votes_label_mask == 1),
-        then we require it to vote for the object center.
-
-        Each seed point may vote for multiple translations v1,v2,v3
-        A seed point may also be in the boxes of multiple objects:
-        o1,o2,o3 with corresponding GT votes c1,c2,c3
-
-        Then the loss for this seed point is:
-            min(d(v_i,c_j)) for i=1,2,3 and j=1,2,3
+        then we require it to vote for grasp points of the object.
+        Each seed point may vote for multiple grasps
     """
 
     # Load ground truth votes and assign them to seed points
@@ -66,7 +60,7 @@ def compute_vote_loss(end_points):
     return vote_loss
 
 def compute_objectness_loss(end_points):
-    """ Compute objectness loss for the proposals.
+    """ Compute objectness loss for the grasps/proposals.
 
     Args:
         end_points: dict (read-only)
@@ -107,8 +101,8 @@ def compute_objectness_loss(end_points):
 
     return objectness_loss, objectness_label, objectness_mask, object_assignment
 
-def compute_box_and_sem_cls_loss(end_points, config):
-    """ Compute 3D bounding box and semantic classification loss.
+def compute_grasp_and_sem_cls_loss(end_points, config):
+    """ Compute grasp and semantic classification loss.
 
     Args:
         end_points: dict (read-only)
@@ -133,12 +127,12 @@ def compute_box_and_sem_cls_loss(end_points, config):
     pred_center = end_points['center']
     gt_center = end_points['center_label'][:,:,0:3]
     dist1, ind1, dist2, _ = nn_distance(pred_center, gt_center) # dist1: BxK, dist2: BxK2
-    box_label_mask = end_points['box_label_mask']
+    grasp_label_mask = end_points['grasp_label_mask']
     objectness_label = end_points['objectness_label'].float()
     centroid_reg_loss1 = \
         torch.sum(dist1*objectness_label)/(torch.sum(objectness_label)+1e-6)
     centroid_reg_loss2 = \
-        torch.sum(dist2*box_label_mask)/(torch.sum(box_label_mask)+1e-6)
+        torch.sum(dist2*grasp_label_mask)/(torch.sum(grasp_label_mask)+1e-6)
     center_loss = centroid_reg_loss1 + centroid_reg_loss2
 
     # Compute angle loss
@@ -196,7 +190,7 @@ def get_loss(end_points, config):
                 angle_class_label, angle_residual_label,
                 viewpoint_class_labell,
                 sem_cls_label,
-                box_label_mask,
+                grasp_label_mask,
                 vote_label, vote_label_mask
             }
         config: dataset config instance
@@ -224,7 +218,7 @@ def get_loss(end_points, config):
 
     # grasp loss and sem cls loss
     center_loss, width_loss, quality_loss, angle_cls_loss, angle_reg_loss, viewpoint_cls_loss, sem_cls_loss = \
-        compute_box_and_sem_cls_loss(end_points, config)
+        compute_grasp_and_sem_cls_loss(end_points, config)
     end_points['center_loss'] = center_loss
     end_points['width_loss'] = width_loss
     end_points['quality_loss'] = quality_loss
@@ -233,11 +227,11 @@ def get_loss(end_points, config):
     end_points['size_cls_loss'] = viewpoint_cls_loss
     #end_points['size_reg_loss'] = size_reg_loss
     end_points['sem_cls_loss'] = sem_cls_loss
-    box_loss = center_loss + quality_loss + width_loss + 0.1*angle_cls_loss + angle_reg_loss + 0.1*viewpoint_cls_loss
-    end_points['box_loss'] = box_loss
+    grasp_loss = center_loss + quality_loss + width_loss + 0.1*angle_cls_loss + angle_reg_loss + 0.1*viewpoint_cls_loss
+    end_points['grasp_loss'] = grasp_loss
 
     # Final loss function
-    loss = vote_loss + 0.5*objectness_loss + box_loss + 0.1*sem_cls_loss
+    loss = vote_loss + 0.5*objectness_loss + grasp_loss + 0.1*sem_cls_loss
     loss *= 10
     end_points['loss'] = loss
 

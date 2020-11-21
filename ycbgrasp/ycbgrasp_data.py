@@ -116,7 +116,7 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
                 grasp[7] = ycbgrasp_utils.type2class[obj.classname]
                 grasp_list.append(grasp)
             
-            # Assign first dimension to indicate it is in an object box
+            # Assign first dimension to indicate it belongs an object
             point_votes[inds,0] = 1
             for grasp_idx, grp in enumerate(obj.grasps):
                 grasp_position = np.array([grp[0], grp[1], grp[2]])

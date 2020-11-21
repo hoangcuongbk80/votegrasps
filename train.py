@@ -176,13 +176,6 @@ def adjust_learning_rate(optimizer, epoch):
 TRAIN_VISUALIZER = TfVisualizer(FLAGS, 'train')
 TEST_VISUALIZER = TfVisualizer(FLAGS, 'test')
 
-
-# Used for AP calculation
-CONFIG_DICT = {'remove_empty_box':False, 'use_3d_nms':True,
-    'nms_iou':0.25, 'use_old_type_nms':False, 'cls_nms':True,
-    'per_class_proposal': True, 'conf_thresh':0.05,
-    'dataset_config':DATASET_CONFIG}
-
 # ------------------------------------------------------------------------- GLOBAL CONFIG END
 
 def train_one_epoch():
