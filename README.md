@@ -1,6 +1,6 @@
 # Context-Aware Grasp Detection for Target Objects in Cluttered Scenes Using Deep Hough Voting
 
-![teaser](https://github.com/facebookresearch/votenet/blob/master/doc/teaser.png)
+![teaser](https://github.com/hoangcuongbk80/votegrasps/tree/master/doc/teaser.png)
 
 ## Introduction
 This repository is code release for our VoteGrasp paper.
