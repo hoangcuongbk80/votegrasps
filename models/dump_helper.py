@@ -69,6 +69,8 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
         if np.sum(objectness_prob>DUMP_CONF_THRESH)>0:
             num_proposal = pred_center.shape[1]
             for j in range(num_proposal):
+                print('quality: ', pred_quality[i,j])
+                print('pred_width: ', pred_width[i,j])
                 grasp = config.param2grasp(pred_sem_cls[i,j], pred_center[i,j,0:3], pred_viewpoint_class[i,j],
                             pred_angle_class[i,j], pred_angle_residual[i,j], pred_quality[i,j], pred_width[i,j])
                 f.write(grasp[0])
