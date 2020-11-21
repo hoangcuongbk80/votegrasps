@@ -40,9 +40,6 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
     pred_viewpoint_class = torch.argmax(end_points['viewpoint_scores'], -1) # B,num_proposal
     pred_sem_cls = torch.argmax(end_points['sem_cls_scores'], -1) # B,num_proposal
 
-    pred_quality = torch.gather(end_points['quality'], 2, pred_angle_class.unsqueeze(-1)) # B,num_proposal,1
-    pred_quality = pred_angle_residual.squeeze(2).detach().cpu().numpy() # B,num_proposal
-
     pred_quality = end_points['quality'].detach().cpu().numpy() # B,num_proposal
     pred_width = end_points['width'].detach().cpu().numpy() # B,num_proposal
 
