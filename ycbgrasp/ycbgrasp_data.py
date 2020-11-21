@@ -1,18 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# 
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-''' Helper class and functions for loading SUN RGB-D objects
-
-Author: Charles R. Qi
-Date: December, 2018
-
-Note: removed unused code for frustum preparation.
-Changed a way for data visualization (removed depdency on mayavi).
-Load depth with scipy.io
-'''
-
 import os
 import sys
 import numpy as np

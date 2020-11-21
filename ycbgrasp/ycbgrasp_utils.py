@@ -1,15 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# 
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-''' Provides Python helper function to read My YCB object grasp dataset.
-
-Author: Dinh-Cuong Hoang
-Date: August, 2020
-
-'''
-
 import numpy as np
 import cv2
 import os

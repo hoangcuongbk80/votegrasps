@@ -17,30 +17,16 @@ class ycbgraspDatasetConfig(object):
         self.class2type = {self.type2class[t]:t for t in self.type2class}
         self.type2onehotclass={'007_tuna_fish_can':0, '008_pudding_box':1, '011_banana':2, '024_bowl':3, '025_mug':4,
                             '044_flat_screwdriver':5, '051_large_clamp':6, '055_baseball':7, '061_foam_brick':8, '065-h_cups':9}
-        self.type_mean_size = {'007_tuna_fish_can': np.array([0.0427889, 0.0427731, 0.0170824]),
-                            '008_pudding_box': np.array([0.0601333, 0.0489079, 0.0191283]),
-                            '011_banana': np.array([0.0985726, 0.0371073, 0.019]),
-                            '024_bowl': np.array([0.0806955, 0.0802303, 0.0274737]),
-                            '025_mug': np.array([0.0599306, 0.0552335, 0.0483711]),
-                            '044_flat_screwdriver': np.array([0.108077, 0.0172692, 0.0167839]),
-                            '051_large_clamp': np.array([0.0833631, 0.0607794, 0.0181959]),
-                            '055_baseball': np.array([0.036739, 0.0362683, 0.0361896]),
-                            '061_foam_brick': np.array([0.0396758, 0.0324347, 0.0310957]),
-                            '065-h_cups': np.array([0.0458534, 0.0455691, 0.0385724])}
-
-        self.mean_size_arr = np.zeros((self.num_viewpoint, 3))
-        for i in range(self.num_viewpoint):
-            self.mean_size_arr[i,:] = self.type_mean_size[self.class2type[i]]
 
     def size2class(self, size, type_name):
         ''' Convert 3D box size (l,w,h) to size class and size residual '''
         size_class = self.type2class[type_name]
-        size_residual = size - self.type_mean_size[type_name]
+        size_residual = 0
         return size_class, size_residual
     
     def class2size(self, pred_cls, residual):
         ''' Inverse function to size2class '''
-        mean_size = self.type_mean_size[self.class2type[pred_cls]]
+        mean_size = 0
         return mean_size + residual
     
     def angle2class(self, angle):
