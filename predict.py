@@ -22,7 +22,6 @@ ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 from pc_util import random_sampling, read_ply, read_xyzrgb_ply
-from ap_helper import parse_predictions
 
 def preprocess_point_cloud(point_cloud):
     ''' Prepare the numpy point cloud (N,3) for forward pass '''
@@ -46,10 +45,6 @@ if __name__=='__main__':
     else:
         print('Unkown dataset %s. Exiting.'%(DATASET))
         exit(-1)
-
-    eval_config_dict = {'remove_empty_box': True, 'use_3d_nms': True, 'nms_iou': 0.25,
-        'use_old_type_nms': False, 'cls_nms': False, 'per_class_proposal': False,
-        'conf_thresh': 0.5, 'dataset_config': DC}
 
     # Init the model and optimzier
     MODEL = importlib.import_module('votegrasp') # import network module
@@ -83,8 +78,6 @@ if __name__=='__main__':
     toc = time.time()
     print('Inference time: %f'%(toc-tic))
     end_points['point_clouds'] = inputs['point_clouds']
-    #pred_map_cls = parse_predictions(end_points, eval_config_dict)
-    #print('Finished detection. %d object detected.'%(len(pred_map_cls[0])))
   
     dump_dir = os.path.join(demo_dir, '%s_results'%(FLAGS.dataset))
     if not os.path.exists(dump_dir): os.mkdir(dump_dir) 

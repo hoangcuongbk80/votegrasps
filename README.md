@@ -26,14 +26,6 @@ Install the following Python dependencies (with `pip install`):
     'trimesh>=2.35.39,<2.35.40'
     'networkx>=2.2,<2.3'
 
-The demo uses a pre-trained model (on SUN RGB-D) to detect objects in a point cloud from an indoor room of a table and a few chairs (from SUN RGB-D val set). You can use 3D visualization software such as the [MeshLab](http://www.meshlab.net/) to open the dumped file under `demo_files/sunrgbd_results` to see the 3D detection output. Specifically, open `***_pc.ply` and `***_pred_confident_nms_bbox.ply` to see the input point cloud and predicted 3D bounding boxes.
-
-You can also run the following command to use another pretrained model on a ScanNet:
-
-    python demo.py --dataset scannet --num_point 40000
-
-Detection results will be dumped to `demo_files/scannet_results`.
-
 ## Training
 
 ### Data preparation
