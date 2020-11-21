@@ -16,6 +16,7 @@ parser.add_argument('--viz', action='store_true', help='Run data visualization.'
 parser.add_argument('--gen_data', action='store_true', help='Generate training dataset.')
 parser.add_argument('--num_sample', type=int, default=5000, help='Number of samples [default: 10000]')
 parser.add_argument('--num_grasp', type=int, default=3, help='Number of samples [default: 3]')
+parser.add_argument('--num_point', type=int, default=50000, help='Point Number [default: 50000]')
 
 args = parser.parse_args()
 
@@ -48,19 +49,18 @@ def data_viz(data_dir, dump_dir=os.path.join(BASE_DIR, 'data_viz_dump')):
     ''' Examine and visualize ycbgrasp dataset. '''
     ycb = ycb_object(data_dir)
     idxs = np.array(range(0,len(ycb)))
-    #np.random.seed(0)
-    #np.random.shuffle(idxs)
 
     if not os.path.exists(dump_dir):
             os.mkdir(dump_dir)
 
     for idx in range(len(ycb)):
-        if idx%500:
+        if idx%10:
             continue
         data_idx = idxs[idx]
         print('data index: ', data_idx)
         pc = ycb.get_pointcloud(data_idx)
         pc=pc[:,0:3]
+        pc = pc_util.random_sampling(pc, args.num_point)
         pc_util.write_ply(pc, os.path.join(dump_dir, str(idx) + '_pc.ply'))
         
     print('Complete!')
