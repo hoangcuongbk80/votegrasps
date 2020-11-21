@@ -72,7 +72,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
                 print('quality: ', pred_quality[i,j])
                 print('pred_width: ', pred_width[i,j])
                 grasp = config.param2grasp(pred_sem_cls[i,j], pred_center[i,j,0:3], pred_viewpoint_class[i,j],
-                            pred_angle_class[i,j], pred_angle_residual[i,j], pred_quality[i,j], pred_width[i,j])
+                            pred_angle_class[i,j], pred_angle_residual[i,j], pred_quality[i,j,0], pred_width[i,j,0])
                 f.write(grasp[0])
                 f.write(' ')             
                 for ite in grasp[1:]:
