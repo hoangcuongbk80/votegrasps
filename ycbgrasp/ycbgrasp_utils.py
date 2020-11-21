@@ -28,7 +28,7 @@ class YCBObject(object):
         for line in grasp_lines:
             data = line.split(' ')
             data[1:] = [float(x) for x in data[1:]]
-            grasp = [data[1],data[2],data[3],data[6]] # grasp_position + heading_angle
+            grasp = [data[1],data[2],data[3],data[6]] # grasp_position + angle_angle
             self.grasps.append(grasp)
 
 def load_pointcloud(pc_filename):
@@ -62,8 +62,8 @@ def rotz(t):
                      [s,  c,  0],
                      [0,  0,  1]])
 
-def my_compute_box_3d(center, size, heading_angle):
-    R = rotz(-1*heading_angle)
+def my_compute_box_3d(center, size, angle):
+    R = rotz(-1*angle)
     l,w,h = size
     x_corners = [-l,l,l,-l,-l,l,l,-l]
     y_corners = [w,w,-w,-w,w,w,-w,-w]

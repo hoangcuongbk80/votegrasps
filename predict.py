@@ -61,7 +61,7 @@ if __name__=='__main__':
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     net = MODEL.VoteNet(num_proposal=256, input_feature_dim=1, vote_factor=1,
         sampling='seed_fps', num_class=DC.num_class,
-        num_heading_bin=DC.num_heading_bin,
+        num_angle_bin=DC.num_angle_bin,
         num_size_cluster=DC.num_size_cluster,
         mean_size_arr=DC.mean_size_arr).to(device)
     print('Constructed model.')

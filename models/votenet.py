@@ -21,7 +21,7 @@ class VoteNet(nn.Module):
         ----------
         num_class: int
             Number of semantics classes to predict over -- size of softmax classifier
-        num_heading_bin: int
+        num_angle_bin: int
         num_viewpoint: int
         input_feature_dim: (default: 0)
             Input dim in the feature descriptor for each point.  If the point cloud is Nx9, this
@@ -32,12 +32,12 @@ class VoteNet(nn.Module):
             Number of votes generated from each seed point.
     """
 
-    def __init__(self, num_class, num_heading_bin, num_viewpoint, mean_size_arr,
+    def __init__(self, num_class, num_angle_bin, num_viewpoint, mean_size_arr,
         input_feature_dim=0, num_proposal=128, vote_factor=1, sampling='vote_fps'):
         super().__init__()
 
         self.num_class = num_class
-        self.num_heading_bin = num_heading_bin
+        self.num_angle_bin = num_angle_bin
         self.num_viewpoint = num_viewpoint
         self.mean_size_arr = mean_size_arr
         assert(mean_size_arr.shape[0] == self.num_viewpoint)
@@ -53,7 +53,7 @@ class VoteNet(nn.Module):
         self.vgen = VotingModule(self.vote_factor, 256)
 
         # Vote aggregation and detection
-        self.pnet = ProposalModule(num_class, num_heading_bin, num_viewpoint,
+        self.pnet = ProposalModule(num_class, num_angle_bin, num_viewpoint,
             mean_size_arr, num_proposal, sampling)
 
     def forward(self, inputs):

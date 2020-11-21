@@ -41,8 +41,8 @@ class ycbgraspVotesDataset(Dataset):
         Returns a dict with following keys:
             point_clouds: (N,3+C)
             center_label: (MAX_NUM_GRASP,3) for GT box center XYZ
-            heading_class_label: (MAX_NUM_GRASP,) with int values in 0,...,NUM_HEADING_BIN-1
-            heading_residual_label: (MAX_NUM_GRASP,)
+            angle_class_label: (MAX_NUM_GRASP,) with int values in 0,...,NUM_ANGLE_BIN-1
+            angle_residual_label: (MAX_NUM_GRASP,)
             size_classe_label: (MAX_NUM_GRASP,) with int values in 0,...,NUM_SIZE_CLUSTER
             sem_cls_label: (MAX_NUM_GRASP,) semantic class index
             box_label_mask: (MAX_NUM_GRASP) as 0/1 with 1 indicating a unique box
@@ -116,8 +116,8 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['quality_label'] = qualities.astype(np.float32)
 
         ret_dict['center_label'] = target_grasps.astype(np.float32)[:,0:3]
-        ret_dict['heading_class_label'] = angle_classes.astype(np.int64)
-        ret_dict['heading_residual_label'] = angle_residuals.astype(np.float32)
+        ret_dict['angle_class_label'] = angle_classes.astype(np.int64)
+        ret_dict['angle_residual_label'] = angle_residuals.astype(np.float32)
         ret_dict['viewpoint_class_label'] = viewpoint_classes.astype(np.int64)
         target_grasps_semcls = np.zeros((MAX_NUM_GRASP))
         target_grasps_semcls[0:grasps.shape[0]] = grasps[:,-1] # from 0 to 9

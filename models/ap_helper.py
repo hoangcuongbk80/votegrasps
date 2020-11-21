@@ -44,7 +44,7 @@ def parse_predictions(end_points, config_dict):
     
     Args:
         end_points: dict
-            {point_clouds, center, heading_scores, heading_residuals,
+            {point_clouds, center, angle_scores, angle_residuals,
             viewpoint_scores, sem_cls_scores}
         config_dict: dict
             {dataset_config, remove_empty_box, use_3d_nms, nms_iou,
@@ -57,10 +57,10 @@ def parse_predictions(end_points, config_dict):
             where j = 0, ..., num of valid detections - 1 from sample input i
     """
     pred_center = end_points['center'] # B,num_proposal,3
-    pred_heading_class = torch.argmax(end_points['heading_scores'], -1) # B,num_proposal
-    pred_heading_residual = torch.gather(end_points['heading_residuals'], 2,
-        pred_heading_class.unsqueeze(-1)) # B,num_proposal,1
-    pred_heading_residual.squeeze_(2)
+    pred_angle_class = torch.argmax(end_points['angle_scores'], -1) # B,num_proposal
+    pred_angle_residual = torch.gather(end_points['angle_residuals'], 2,
+        pred_angle_class.unsqueeze(-1)) # B,num_proposal,1
+    pred_angle_residual.squeeze_(2)
     pred_size_class = torch.argmax(end_points['viewpoint_scores'], -1) # B,num_proposal
     #pred_size_residual = torch.gather(end_points['size_residuals'], 2,
     #    pred_size_class.unsqueeze(-1).unsqueeze(-1).repeat(1,1,1,3)) # B,num_proposal,1,3
@@ -77,11 +77,11 @@ def parse_predictions(end_points, config_dict):
     pred_center_upright_camera = flip_axis_to_camera(pred_center.detach().cpu().numpy())
     for i in range(bsize):
         for j in range(num_proposal):
-            heading_angle = config_dict['dataset_config'].class2angle(\
-                pred_heading_class[i,j].detach().cpu().numpy(), pred_heading_residual[i,j].detach().cpu().numpy())
+            angle_angle = config_dict['dataset_config'].class2angle(\
+                pred_angle_class[i,j].detach().cpu().numpy(), pred_angle_residual[i,j].detach().cpu().numpy())
             box_size = config_dict['dataset_config'].class2size(\
                 int(pred_size_class[i,j].detach().cpu().numpy()), 0.1)
-            corners_3d_upright_camera = get_3d_box(box_size, heading_angle, pred_center_upright_camera[i,j,:])
+            corners_3d_upright_camera = get_3d_box(box_size, angle_angle, pred_center_upright_camera[i,j,:])
             pred_corners_3d_upright_camera[i,j] = corners_3d_upright_camera
 
     K = pred_center.shape[1] # K==num_proposal
@@ -180,7 +180,7 @@ def parse_groundtruths(end_points, config_dict):
     
     Args:
         end_points: dict
-            {center_label, heading_class_label, heading_residual_label,
+            {center_label, angle_class_label, angle_residual_label,
             viewpoint_class_label, sem_cls_label,
             box_label_mask}
         config_dict: dict
@@ -193,8 +193,8 @@ def parse_groundtruths(end_points, config_dict):
             where j = 0, ..., num of objects - 1 at sample input i
     """
     center_label = end_points['center_label']
-    heading_class_label = end_points['heading_class_label']
-    heading_residual_label = end_points['heading_residual_label']
+    angle_class_label = end_points['angle_class_label']
+    angle_residual_label = end_points['angle_residual_label']
     viewpoint_class_label = end_points['viewpoint_class_label']
     box_label_mask = end_points['box_label_mask']
     sem_cls_label = end_points['sem_cls_label']
@@ -206,9 +206,9 @@ def parse_groundtruths(end_points, config_dict):
     for i in range(bsize):
         for j in range(K2):
             if box_label_mask[i,j] == 0: continue
-            heading_angle = config_dict['dataset_config'].class2angle(heading_class_label[i,j].detach().cpu().numpy(), heading_residual_label[i,j].detach().cpu().numpy())
+            angle_angle = config_dict['dataset_config'].class2angle(angle_class_label[i,j].detach().cpu().numpy(), angle_residual_label[i,j].detach().cpu().numpy())
             box_size = config_dict['dataset_config'].class2size(int(viewpoint_class_label[i,j].detach().cpu().numpy()), 0.01)
-            corners_3d_upright_camera = get_3d_box(box_size, heading_angle, gt_center_upright_camera[i,j,:])
+            corners_3d_upright_camera = get_3d_box(box_size, angle_angle, gt_center_upright_camera[i,j,:])
             gt_corners_3d_upright_camera[i,j] = corners_3d_upright_camera
 
     batch_gt_map_cls = []

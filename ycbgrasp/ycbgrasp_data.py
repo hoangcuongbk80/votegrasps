@@ -112,7 +112,7 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
                 grasp = np.zeros((8))
                 grasp[0:3] = np.array([grp[0], grp[1], grp[2]]) # grasp_position
                 grasp[3:6] = np.array([1.0,1.0,1.0]) # before: obb length, now: grasp quality
-                grasp[6] = grp[3] # heading_angle
+                grasp[6] = grp[3] # angle
                 grasp[7] = ycbgrasp_utils.type2class[obj.classname]
                 grasp_list.append(grasp)
             

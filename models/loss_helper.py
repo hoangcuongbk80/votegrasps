@@ -115,13 +115,13 @@ def compute_box_and_sem_cls_loss(end_points, config):
 
     Returns:
         center_loss
-        heading_cls_loss
-        heading_reg_loss
+        angle_cls_loss
+        angle_reg_loss
         viewpoint_cls_loss
         sem_cls_loss
     """
 
-    num_heading_bin = config.num_heading_bin
+    num_angle_bin = config.num_angle_bin
     num_viewpoint = config.num_viewpoint
     num_class = config.num_class
     mean_size_arr = config.mean_size_arr
@@ -141,21 +141,21 @@ def compute_box_and_sem_cls_loss(end_points, config):
         torch.sum(dist2*box_label_mask)/(torch.sum(box_label_mask)+1e-6)
     center_loss = centroid_reg_loss1 + centroid_reg_loss2
 
-    # Compute heading loss
-    heading_class_label = torch.gather(end_points['heading_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
-    criterion_heading_class = nn.CrossEntropyLoss(reduction='none')
-    heading_class_loss = criterion_heading_class(end_points['heading_scores'].transpose(2,1), heading_class_label) # (B,K)
-    heading_class_loss = torch.sum(heading_class_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
+    # Compute angle loss
+    angle_class_label = torch.gather(end_points['angle_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
+    criterion_angle_class = nn.CrossEntropyLoss(reduction='none')
+    angle_class_loss = criterion_angle_class(end_points['angle_scores'].transpose(2,1), angle_class_label) # (B,K)
+    angle_class_loss = torch.sum(angle_class_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
-    heading_residual_label = torch.gather(end_points['heading_residual_label'], 1, object_assignment) # select (B,K) from (B,K2)
-    heading_residual_normalized_label = heading_residual_label / (np.pi/num_heading_bin)
+    angle_residual_label = torch.gather(end_points['angle_residual_label'], 1, object_assignment) # select (B,K) from (B,K2)
+    angle_residual_normalized_label = angle_residual_label / (np.pi/num_angle_bin)
 
     # Ref: https://discuss.pytorch.org/t/convert-int-into-one-hot-format/507/3
-    heading_label_one_hot = torch.cuda.FloatTensor(batch_size, heading_class_label.shape[1], num_heading_bin).zero_()
-    heading_label_one_hot.scatter_(2, heading_class_label.unsqueeze(-1), 1) # src==1 so it's *one-hot* (B,K,num_heading_bin)
-    heading_residual_normalized_loss = huber_loss(torch.sum(end_points['heading_residuals_normalized']*heading_label_one_hot, -1) - heading_residual_normalized_label, delta=1.0) # (B,K)
-    cuong = torch.sum(end_points['heading_residuals_normalized']*heading_label_one_hot, -1)
-    heading_residual_normalized_loss = torch.sum(heading_residual_normalized_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
+    angle_label_one_hot = torch.cuda.FloatTensor(batch_size, angle_class_label.shape[1], num_angle_bin).zero_()
+    angle_label_one_hot.scatter_(2, angle_class_label.unsqueeze(-1), 1) # src==1 so it's *one-hot* (B,K,num_angle_bin)
+    angle_residual_normalized_loss = huber_loss(torch.sum(end_points['angle_residuals_normalized']*angle_label_one_hot, -1) - angle_residual_normalized_label, delta=1.0) # (B,K)
+    cuong = torch.sum(end_points['angle_residuals_normalized']*angle_label_one_hot, -1)
+    angle_residual_normalized_loss = torch.sum(angle_residual_normalized_loss*objectness_label)/(torch.sum(objectness_label)+1e-6)
 
     # Compute width loss
     gt_width = torch.gather(end_points['width_label'], 1, object_assignment) # select (B,K) from (B,K2)
@@ -179,7 +179,7 @@ def compute_box_and_sem_cls_loss(end_points, config):
     sem_cls_loss = criterion_sem_cls(end_points['sem_cls_scores'].transpose(2,1), sem_cls_label) # (B,K)
     sem_cls_loss = torch.sum(sem_cls_loss * objectness_label)/(torch.sum(objectness_label)+1e-6)
 
-    return center_loss, width_loss, quality_loss, heading_class_loss, heading_residual_normalized_loss, viewpoint_class_loss, sem_cls_loss
+    return center_loss, width_loss, quality_loss, angle_class_loss, angle_residual_normalized_loss, viewpoint_class_loss, sem_cls_loss
 
 def get_loss(end_points, config):
     """ Loss functions
@@ -189,11 +189,11 @@ def get_loss(end_points, config):
             {   
                 seed_xyz, seed_inds, vote_xyz,
                 center,
-                heading_scores, heading_residuals_normalized,
+                angle_scores, angle_residuals_normalized,
                 viewpoint_scores,
                 sem_cls_scores, #seed_logits,#
                 center_label,
-                heading_class_label, heading_residual_label,
+                angle_class_label, angle_residual_label,
                 viewpoint_class_labell,
                 sem_cls_label,
                 box_label_mask,
@@ -223,17 +223,17 @@ def get_loss(end_points, config):
         torch.sum(objectness_mask.float())/float(total_num_proposal) - end_points['pos_ratio']
 
     # grasp loss and sem cls loss
-    center_loss, width_loss, quality_loss, heading_cls_loss, heading_reg_loss, viewpoint_cls_loss, sem_cls_loss = \
+    center_loss, width_loss, quality_loss, angle_cls_loss, angle_reg_loss, viewpoint_cls_loss, sem_cls_loss = \
         compute_box_and_sem_cls_loss(end_points, config)
     end_points['center_loss'] = center_loss
     end_points['width_loss'] = width_loss
     end_points['quality_loss'] = quality_loss
-    end_points['heading_cls_loss'] = heading_cls_loss
-    end_points['heading_reg_loss'] = heading_reg_loss
+    end_points['angle_cls_loss'] = angle_cls_loss
+    end_points['angle_reg_loss'] = angle_reg_loss
     end_points['size_cls_loss'] = viewpoint_cls_loss
     #end_points['size_reg_loss'] = size_reg_loss
     end_points['sem_cls_loss'] = sem_cls_loss
-    box_loss = center_loss + quality_loss + width_loss + 0.1*heading_cls_loss + heading_reg_loss + 0.1*viewpoint_cls_loss
+    box_loss = center_loss + quality_loss + width_loss + 0.1*angle_cls_loss + angle_reg_loss + 0.1*viewpoint_cls_loss
     end_points['box_loss'] = box_loss
 
     # Final loss function

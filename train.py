@@ -125,7 +125,7 @@ num_input_channel = int(FLAGS.use_color)*3 + int(not FLAGS.no_height)*1
 Detector = MODEL.VoteNet
 
 net = Detector(num_class=DATASET_CONFIG.num_class,
-               num_heading_bin=DATASET_CONFIG.num_heading_bin,
+               num_angle_bin=DATASET_CONFIG.num_angle_bin,
                num_viewpoint=DATASET_CONFIG.num_viewpoint,
                mean_size_arr=DATASET_CONFIG.mean_size_arr,
                num_proposal=FLAGS.num_target,

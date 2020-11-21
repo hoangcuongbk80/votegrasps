@@ -9,7 +9,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 class ycbgraspDatasetConfig(object):
     def __init__(self):
         self.num_class = 10
-        self.num_heading_bin = 12
+        self.num_angle_bin = 12
         self.num_viewpoint = 10
 
         self.type2class={'007_tuna_fish_can':0, '008_pudding_box':1, '011_banana':2, '024_bowl':3, '025_mug':4,
@@ -52,7 +52,7 @@ class ycbgraspDatasetConfig(object):
             return is class of int32 of 0,1,...,N-1 and a number such that
                 class*(2pi/N) + number = angle
         '''
-        num_class = self.num_heading_bin
+        num_class = self.num_angle_bin
         angle = angle%(2*np.pi)
         assert(angle>=0 and angle<=2*np.pi)
         angle_per_class = 2*np.pi/float(num_class)
@@ -63,7 +63,7 @@ class ycbgraspDatasetConfig(object):
     
     def class2angle(self, pred_cls, residual, to_label_format=True):
         ''' Inverse function to angle2class '''
-        num_class = self.num_heading_bin
+        num_class = self.num_angle_bin
         angle_per_class = 2*np.pi/float(num_class)
         angle_center = pred_cls * angle_per_class
         angle = angle_center + residual
@@ -71,17 +71,17 @@ class ycbgraspDatasetConfig(object):
             angle = angle - 2*np.pi
         return angle
 
-    def param2obb(self, center, heading_class, heading_residual, size_class, size_residual):
-        heading_angle = self.class2angle(heading_class, heading_residual)
+    def param2obb(self, center, angle_class, angle_residual, size_class, size_residual):
+        angle = self.class2angle(angle_class, angle_residual)
         box_size = self.class2size(int(size_class), size_residual)
         obb = np.zeros((7,))
         obb[0:3] = center
         obb[3:6] = box_size
-        obb[6] = heading_angle*-1
+        obb[6] = angle*-1
         return obb
 
-    def param2grasp(self, center, heading_class, heading_residual, size_class):
-        heading_angle = self.class2angle(heading_class, heading_residual) * 180/np.pi
+    def param2grasp(self, center, angle_class, angle_residual, size_class):
+        angle = self.class2angle(angle_class, angle_residual) * 180/np.pi
         object_name = self.class2type[int(size_class)]
         grasp = []
         grasp.append(object_name)
@@ -90,7 +90,7 @@ class ycbgraspDatasetConfig(object):
         grasp.append(center[2])
         grasp.append(180.0)
         grasp.append(0.0)
-        grasp.append(heading_angle)
+        grasp.append(angle)
         grasp.append(0.922)
         grasp.append(0.13)
         return grasp
