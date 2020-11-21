@@ -67,7 +67,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
             num_proposal = pred_center.shape[1]
             for j in range(num_proposal):
                 grasp = config.param2grasp(pred_center[i,j,0:3], pred_angle_class[i,j], pred_angle_residual[i,j],
-                                pred_viewpoint_class[i,j], pred_sem_cls)
+                                pred_viewpoint_class[i,j], pred_sem_cls[i,j])
                 f.write(grasp[0])
                 f.write(' ')             
                 for ite in grasp[1:]:
