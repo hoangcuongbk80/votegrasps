@@ -20,8 +20,8 @@ def decode_scores(net, end_points, num_class, num_angle_bin, num_viewpoint, mean
     end_points['objectness_scores'] = objectness_scores
     
     base_xyz = end_points['aggregated_vote_xyz'] # (batch_size, num_proposal, 3)
-    center = base_xyz + net_transposed[:,:,2:5] # (batch_size, num_proposal, 3)
-    end_points['center'] = center
+    grasp_point = base_xyz + net_transposed[:,:,2:5] # (batch_size, num_proposal, 3)
+    end_points['grasp_point'] = grasp_point
 
     width = net_transposed[:,:,5:6] # (batch_size, num_proposal, 1)
     end_points['width'] = width
@@ -67,7 +67,7 @@ class ProposalModule(nn.Module):
             )
     
         # Grasp detection/proposal
-        # Objectness-> class (2), center-> residual (3), width-> residual (1), quality(score)-> residual (1)
+        # Objectness-> class (2), grasp_point-> residual (3), width-> residual (1), quality(score)-> residual (1)
         # in-plane rotation-> class+residual (num_angle_bin*2), 
         # viewpoint-> class (num_viewpoint)
         self.conv1 = torch.nn.Conv1d(128,128,1)
