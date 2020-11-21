@@ -28,9 +28,9 @@ from pc_util import random_sampling, read_ply, read_xyzrgb_ply
 def preprocess_point_cloud(point_cloud):
     ''' Prepare the numpy point cloud (N,3) for forward pass '''
     point_cloud = point_cloud[:,0:3] # do not use color for now
-    #floor_height = np.percentile(point_cloud[:,2],0.99)
-    #height = point_cloud[:,2] - floor_height
-    #point_cloud = np.concatenate([point_cloud, np.expand_dims(height, 1)],1) # (N,4) or (N,7)
+    floor_height = np.percentile(point_cloud[:,2],0.99)
+    height = point_cloud[:,2] - floor_height
+    point_cloud = np.concatenate([point_cloud, np.expand_dims(height, 1)],1) # (N,4) or (N,7)
     point_cloud = random_sampling(point_cloud, FLAGS.num_point)
     pc = np.expand_dims(point_cloud.astype(np.float32), 0) # (1,40000,4)
     return pc
