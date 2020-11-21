@@ -28,12 +28,12 @@ class VoteGrasp(nn.Module):
             value should be 6 as in an Nx9 point cloud, 3 of the channels are xyz, and 6 are feature descriptors
         num_proposal: int (default: 128)
             Number of grasp proposals/detections generated from the network. Each proposal is a grasp with a semantic class.
-        vote_factor: (default: 1)
+        vote_factor: (default: 10)
             Number of votes generated from each seed point.
     """
 
     def __init__(self, num_class, num_angle_bin, num_viewpoint,
-        input_feature_dim=0, num_proposal=128, vote_factor=1, sampling='vote_fps'):
+        input_feature_dim=0, num_proposal=128, vote_factor=10, sampling='vote_fps'):
         super().__init__()
 
         self.num_class = num_class

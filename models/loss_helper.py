@@ -38,7 +38,7 @@ def compute_vote_loss(end_points):
     # vote_label_mask: Use gather to select B,num_seed from B,num_point
     #   non-object point has no GT vote mask = 0, object point has mask = 1
     # vote_label: Use gather to select B,num_seed,9 from B,num_point,9
-    #   with inds in shape B,num_seed,9 and 9 = GT_VOTE_FACTOR * 3
+    #   with inds in shape B,num_seed,30 and 30 = GT_VOTE_FACTOR * 3
     seed_gt_votes_mask = torch.gather(end_points['vote_label_mask'], 1, seed_inds)
     seed_inds_expand = seed_inds.view(batch_size,num_seed,1).repeat(1,1,3*GT_VOTE_FACTOR)
     seed_gt_votes = torch.gather(end_points['vote_label'], 1, seed_inds_expand)
