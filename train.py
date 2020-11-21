@@ -1,7 +1,7 @@
 """ Training for grasp detection with YCB objects.
 
 Sample usage:
-python grasp_train.py --dataset ycbgrasp --log_dir log_ycbgrasp
+python train.py
 
 """
 

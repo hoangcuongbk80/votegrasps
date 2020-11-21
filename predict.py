@@ -1,4 +1,5 @@
 """ Predict/generate grasps from a point cloud using VoteGrasp.
+sample usage: python predict.py --input points.ply
 """
 
 import os
@@ -10,6 +11,7 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', default='ycbgrasp', help='Dataset: ycbgrasp [default: ycbgrasp]')
+parser.add_argument('--input', default='points.ply', help='Input: pointcloud [default: points.ply]')
 parser.add_argument('--num_point', type=int, default=20000, help='Point Number [default: 20000]')
 FLAGS = parser.parse_args()
 
@@ -36,12 +38,14 @@ def preprocess_point_cloud(point_cloud):
 if __name__=='__main__':
     
     # Set file paths and dataset config
-    demo_dir = os.path.join(BASE_DIR, 'demo_files') 
+    demo_dir = os.path.join(BASE_DIR, 'predict_result')
+    log_dir = os.path.join(BASE_DIR, 'log') 
+
     if FLAGS.dataset == 'ycbgrasp':
         sys.path.append(os.path.join(ROOT_DIR, 'ycbgrasp'))
         from ycbgrasp_dataset import DC # dataset config
-        checkpoint_path = os.path.join(demo_dir, 'pretrained_votegrasp_on_ycbgrasp.tar')
-        pc_path = os.path.join(demo_dir, 'input_pc_ycbgrasp.ply')
+        checkpoint_path = os.path.join(log_dir, 'checkpoint.tar') # trained model path
+        pc_path = FLAGS.input
     else:
         print('Unkown dataset %s. Exiting.'%(DATASET))
         exit(-1)
