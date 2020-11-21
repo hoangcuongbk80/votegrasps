@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--viz', action='store_true', help='Run data visualization.')
 parser.add_argument('--gen_data', action='store_true', help='Generate training dataset.')
 parser.add_argument('--num_sample', type=int, default=100, help='Number of samples [default: 100000]')
-parser.add_argument('--num_grasp', type=int, default=3, help='Number of samples [default: 3]')
+parser.add_argument('--num_grasp', type=int, default=10, help='Number of grasps per objects [default: 10]')
 parser.add_argument('--num_point', type=int, default=50000, help='Point Number [default: 50000]')
 
 args = parser.parse_args()
@@ -84,7 +84,7 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
         # Save grasps and votes
         grasp_list = []
         N = pc.shape[0]
-        point_votes = np.zeros((N,10)) # 10 votes and 1 vote mask 
+        point_votes = np.zeros((N,31)) # 10 votes and 1 vote mask 10*3+1 
         point_vote_idx = np.zeros((N)).astype(np.int32) # in the range of [0,2]
         indices = np.arange(N)
         for obj in objects:
@@ -135,7 +135,7 @@ if __name__=='__main__':
         np.random.seed(0)
         np.random.shuffle(idxs)
         np.savetxt(os.path.join(BASE_DIR, 'data', 'train_data_idx.txt'), idxs[:90], fmt='%i')
-        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[10:], fmt='%i')
+        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[90:], fmt='%i')
         
         DATA_DIR = os.path.join(BASE_DIR, 'data')
         extract_ycbgrasp_data(DATA_DIR, os.path.join(DATA_DIR, 'train_data_idx.txt'),
