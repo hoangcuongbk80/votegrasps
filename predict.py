@@ -9,7 +9,7 @@ import importlib
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', default='ycbgrasp', help='Dataset: sunrgbd or scannet [default: ycbgrasp]')
+parser.add_argument('--dataset', default='ycbgrasp', help='Dataset: ycbgrasp [default: ycbgrasp]')
 parser.add_argument('--num_point', type=int, default=20000, help='Point Number [default: 20000]')
 FLAGS = parser.parse_args()
 
@@ -84,8 +84,8 @@ if __name__=='__main__':
     toc = time.time()
     print('Inference time: %f'%(toc-tic))
     end_points['point_clouds'] = inputs['point_clouds']
-    pred_map_cls = parse_predictions(end_points, eval_config_dict)
-    print('Finished detection. %d object detected.'%(len(pred_map_cls[0])))
+    #pred_map_cls = parse_predictions(end_points, eval_config_dict)
+    #print('Finished detection. %d object detected.'%(len(pred_map_cls[0])))
   
     dump_dir = os.path.join(demo_dir, '%s_results'%(FLAGS.dataset))
     if not os.path.exists(dump_dir): os.mkdir(dump_dir) 

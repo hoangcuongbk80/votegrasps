@@ -65,9 +65,9 @@ def compute_objectness_loss(end_points):
         objectness_label: (batch_size, num_seed) Tensor with value 0 or 1
         objectness_mask: (batch_size, num_seed) Tensor with value 0 or 1
         object_assignment: (batch_size, num_seed) Tensor with long int
-            within [0,num_gt_object-1]
+            within [0,num_gt_grasp-1]
     """ 
-    # Associate proposal and GT objects by point-to-point distances
+    # Associate proposal and GT grasps by point-to-point distances
     aggregated_vote_xyz = end_points['aggregated_vote_xyz']
     gt_center = end_points['center_label'][:,:,0:3]
     B = gt_center.shape[0]
@@ -76,8 +76,8 @@ def compute_objectness_loss(end_points):
     dist1, ind1, dist2, _ = nn_distance(aggregated_vote_xyz, gt_center) # dist1: BxK, dist2: BxK2
 
     # Generate objectness label and mask
-    # objectness_label: 1 if pred object center is within NEAR_THRESHOLD of any GT object
-    # objectness_mask: 0 if pred object center is in gray zone (DONOTCARE), 1 otherwise
+    # objectness_label: 1 if pred grasp center is within NEAR_THRESHOLD of any GT grasp
+    # objectness_mask: 0 if pred grasp center is in gray zone (DONOTCARE), 1 otherwise
     euclidean_dist1 = torch.sqrt(dist1+1e-6)
     objectness_label = torch.zeros((B,K), dtype=torch.long).cuda()
     objectness_mask = torch.zeros((B,K)).cuda()
