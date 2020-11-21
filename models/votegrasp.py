@@ -27,7 +27,7 @@ class VoteGrasp(nn.Module):
             Input dim in the feature descriptor for each point.  If the point cloud is Nx9, this
             value should be 6 as in an Nx9 point cloud, 3 of the channels are xyz, and 6 are feature descriptors
         num_proposal: int (default: 128)
-            Number of proposals/detections generated from the network. Each proposal is a 3D OBB with a semantic class.
+            Number of grasp proposals/detections generated from the network. Each proposal is a grasp with a semantic class.
         vote_factor: (default: 1)
             Number of votes generated from each seed point.
     """
@@ -89,39 +89,3 @@ class VoteGrasp(nn.Module):
         end_points = self.pnet(xyz, features, end_points)
 
         return end_points
-
-
-if __name__=='__main__':
-    sys.path.append(os.path.join(ROOT_DIR, 'sunrgbd'))
-    from sunrgbd_detection_dataset import SunrgbdDetectionVotesDataset, DC
-    from loss_helper import get_loss
-
-    # Define model
-    model = VoteGrasp(10,12,10,np.random.random((10,3))).cuda()
-    
-    try:
-        # Define dataset
-        TRAIN_DATASET = SunrgbdDetectionVotesDataset('train', num_points=20000, use_v1=True)
-
-        # Model forward pass
-        sample = TRAIN_DATASET[5]
-        inputs = {'point_clouds': torch.from_numpy(sample['point_clouds']).unsqueeze(0).cuda()}
-    except:
-        print('Dataset has not been prepared. Use a random sample.')
-        inputs = {'point_clouds': torch.rand((20000,3)).unsqueeze(0).cuda()}
-
-    end_points = model(inputs)
-    for key in end_points:
-        print(key, end_points[key])
-
-    try:
-        # Compute loss
-        for key in sample:
-            end_points[key] = torch.from_numpy(sample[key]).unsqueeze(0).cuda()
-        loss, end_points = get_loss(end_points, DC)
-        print('loss', loss)
-        end_points['point_clouds'] = inputs['point_clouds']
-        end_points['pred_mask'] = np.ones((1,128))
-        dump_results(end_points, 'tmp', DC)
-    except:
-        print('Dataset has not been prepared. Skip loss and dump.')
