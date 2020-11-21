@@ -14,7 +14,7 @@ import ycbgrasp_utils
 parser = argparse.ArgumentParser()
 parser.add_argument('--viz', action='store_true', help='Run data visualization.')
 parser.add_argument('--gen_data', action='store_true', help='Generate training dataset.')
-parser.add_argument('--num_sample', type=int, default=5000, help='Number of samples [default: 10000]')
+parser.add_argument('--num_sample', type=int, default=100, help='Number of samples [default: 100000]')
 parser.add_argument('--num_grasp', type=int, default=3, help='Number of samples [default: 3]')
 parser.add_argument('--num_point', type=int, default=50000, help='Point Number [default: 50000]')
 
@@ -84,7 +84,7 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
         # Save grasps and votes
         grasp_list = []
         N = pc.shape[0]
-        point_votes = np.zeros((N,10)) # 3 votes and 1 vote mask 
+        point_votes = np.zeros((N,10)) # 10 votes and 1 vote mask 
         point_vote_idx = np.zeros((N)).astype(np.int32) # in the range of [0,2]
         indices = np.arange(N)
         for obj in objects:
@@ -96,9 +96,11 @@ def extract_ycbgrasp_data(data_dir, idx_filename, output_folder, num_point=20000
             for grp in obj.grasps:
                 grasp = np.zeros((8))
                 grasp[0:3] = np.array([grp[0], grp[1], grp[2]]) # grasp_position
-                grasp[3:6] = np.array([1.0,1.0,1.0]) # before: obb length, now: grasp quality
-                grasp[6] = grp[3] # angle
-                grasp[7] = ycbgrasp_utils.type2class[obj.classname]
+                grasp[3] = grp[3] # viewpoint
+                grasp[4] = grp[4] # angle
+                grasp[5] = grp[5] # quality
+                grasp[5] = grp[6] # width
+                grasp[7] = ycbgrasp_utils.type2class[obj.classname] # semantic class id
                 grasp_list.append(grasp)
             
             # Assign first dimension to indicate it belongs an object
@@ -132,8 +134,8 @@ if __name__=='__main__':
         idxs = np.array(range(0,args.num_sample))
         np.random.seed(0)
         np.random.shuffle(idxs)
-        np.savetxt(os.path.join(BASE_DIR, 'data', 'train_data_idx.txt'), idxs[:4000], fmt='%i')
-        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[4000:], fmt='%i')
+        np.savetxt(os.path.join(BASE_DIR, 'data', 'train_data_idx.txt'), idxs[:90], fmt='%i')
+        np.savetxt(os.path.join(BASE_DIR, 'data', 'val_data_idx.txt'), idxs[10:], fmt='%i')
         
         DATA_DIR = os.path.join(BASE_DIR, 'data')
         extract_ycbgrasp_data(DATA_DIR, os.path.join(DATA_DIR, 'train_data_idx.txt'),

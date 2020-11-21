@@ -82,18 +82,19 @@ class ycbgraspVotesDataset(Dataset):
 
         for i in range(grasps.shape[0]):
             grasp = grasps[i]
-            semantic_class = grasp[7]
             grasp_center = grasp[0:3]
-            angle_class, angle_residual = DC.angle2class(grasp[6]) 
-            grasp_size = grasp[3:6]*2
-            viewpoint_class = 8
+            viewpoint_class = grasp[3]
+            angle_class, angle_residual = DC.angle2class(grasp[4])
+            grasp_quality = grasp[5]
+            grasp_width = grasp[6]
+            semantic_class = grasp[7]
+            
             grasp_centers[i,:] = grasp_center
+            viewpoint_classes[i] = viewpoint_class
             angle_classes[i] = angle_class
             angle_residuals[i] = angle_residual
-            viewpoint_classes[i] = viewpoint_class
-            widths[i] = 0.06
-            qualities[i] = 0.6
-            grasp_sizes[i,:] = grasp_size
+            qualities[i] = grasp_quality
+            widths[i] = grasp_width
 
         target_grasps_mask = label_mask 
         target_grasps = np.zeros((MAX_NUM_GRASP, 6))

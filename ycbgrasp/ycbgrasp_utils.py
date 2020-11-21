@@ -16,7 +16,7 @@ class YCBObject(object):
         for line in grasp_lines:
             data = line.split(' ')
             data[1:] = [float(x) for x in data[1:]]
-            grasp = [data[1],data[2],data[3],data[6]] # grasp_position + angle_angle
+            grasp = [data[1],data[2],data[3],data[4],data[5],data[6], data[7]] # grasp_position(3), viewpoint, angle_angle, quality, width
             self.grasps.append(grasp)
 
 def load_pointcloud(pc_filename):
