@@ -57,8 +57,7 @@ if __name__=='__main__':
     net = MODEL.VoteGrasp(num_proposal=256, input_feature_dim=1, vote_factor=1,
         sampling='seed_fps', num_class=DC.num_class,
         num_angle_bin=DC.num_angle_bin,
-        num_size_cluster=DC.num_size_cluster,
-        mean_size_arr=DC.mean_size_arr).to(device)
+        num_viewpoint=DC.num_viewpoint).to(device)
     print('Constructed model.')
     
     # Load checkpoint
