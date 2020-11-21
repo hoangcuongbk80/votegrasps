@@ -66,16 +66,15 @@ class ycbgraspDatasetConfig(object):
         obb[6] = angle*-1
         return obb
 
-    def param2grasp(self, center, angle_class, angle_residual, size_class):
+    def param2grasp(self, center, angle_class, angle_residual, viewpoint_class, pred_sem_cls):
         angle = self.class2angle(angle_class, angle_residual) * 180/np.pi
-        object_name = self.class2type[int(size_class)]
+        object_name = self.class2type[int(pred_sem_cls)]
         grasp = []
         grasp.append(object_name)
         grasp.append(center[0])
         grasp.append(center[1])
         grasp.append(center[2])
-        grasp.append(180.0)
-        grasp.append(0.0)
+        grasp.append(viewpoint_class)
         grasp.append(angle)
         grasp.append(0.922)
         grasp.append(0.13)

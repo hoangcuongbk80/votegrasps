@@ -38,6 +38,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
     pred_angle_class = pred_angle_class.detach().cpu().numpy() # B,num_proposal
     pred_angle_residual = pred_angle_residual.squeeze(2).detach().cpu().numpy() # B,num_proposal
     pred_viewpoint_class = torch.argmax(end_points['viewpoint_scores'], -1) # B,num_proposal
+    pred_sem_cls = torch.argmax(end_points['sem_cls_scores'], -1) # B,num_proposal
 
     # OTHERS
     #pred_mask = end_points['pred_mask'] # B,num_proposal
@@ -45,7 +46,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
 
     save_grasp_file = os.path.join(dump_dir, 'pred_grasps.txt')
     f = open(save_grasp_file, "w")
-    f.write("object x y z rx ry rz quality dofValue\n")
+    f.write("object x y z viewpoint angle quality width\n")
 
     for i in range(batch_size):
         pc = point_clouds[i,:,:]
@@ -58,7 +59,6 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
             pc_util.write_ply(end_points['vote_xyz'][i,:,:], os.path.join(dump_dir, '%06d_vgen_pc.ply'%(idx_beg+i)))
             pc_util.write_ply(aggregated_vote_xyz[i,:,:], os.path.join(dump_dir, '%06d_aggregated_vote_pc.ply'%(idx_beg+i)))
             pc_util.write_ply(aggregated_vote_xyz[i,:,:], os.path.join(dump_dir, '%06d_aggregated_vote_pc.ply'%(idx_beg+i)))
-        pc_util.write_ply(pred_center[i,:,0:3], os.path.join(dump_dir, '%06d_proposal_pc.ply'%(idx_beg+i)))
         if np.sum(objectness_prob>DUMP_CONF_THRESH)>0:
             pc_util.write_ply(pred_center[i,objectness_prob>DUMP_CONF_THRESH,0:3], os.path.join(dump_dir, '%06d_confident_proposal_pc.ply'%(idx_beg+i)))
 
@@ -67,7 +67,7 @@ def dump_results(end_points, dump_dir, config, inference_switch=False):
             num_proposal = pred_center.shape[1]
             for j in range(num_proposal):
                 grasp = config.param2grasp(pred_center[i,j,0:3], pred_angle_class[i,j], pred_angle_residual[i,j],
-                                pred_viewpoint_class[i,j])
+                                pred_viewpoint_class[i,j], pred_sem_cls)
                 f.write(grasp[0])
                 f.write(' ')             
                 for ite in grasp[1:]:
