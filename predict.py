@@ -38,7 +38,7 @@ def preprocess_point_cloud(point_cloud):
 if __name__=='__main__':
     
     # Set file paths and dataset config
-    demo_dir = os.path.join(BASE_DIR, 'predict_result')
+    dump_dir = os.path.join(BASE_DIR, 'pred_result')
     log_dir = os.path.join(BASE_DIR, 'log') 
 
     if FLAGS.dataset == 'ycbgrasp':
@@ -83,7 +83,6 @@ if __name__=='__main__':
     print('Inference time: %f'%(toc-tic))
     end_points['point_clouds'] = inputs['point_clouds']
   
-    dump_dir = os.path.join(demo_dir, '%s_results'%(FLAGS.dataset))
     if not os.path.exists(dump_dir): os.mkdir(dump_dir) 
     MODEL.dump_results(end_points, dump_dir, DC, True)
     print('Dumped detection results to folder %s'%(dump_dir))
