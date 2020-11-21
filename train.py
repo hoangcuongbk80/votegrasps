@@ -127,7 +127,6 @@ Detector = MODEL.VoteGrasp
 net = Detector(num_class=DATASET_CONFIG.num_class,
                num_angle_bin=DATASET_CONFIG.num_angle_bin,
                num_viewpoint=DATASET_CONFIG.num_viewpoint,
-               mean_size_arr=DATASET_CONFIG.mean_size_arr,
                num_proposal=FLAGS.num_target,
                input_feature_dim=num_input_channel,
                vote_factor=FLAGS.vote_factor,

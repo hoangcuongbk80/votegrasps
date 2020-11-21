@@ -11,7 +11,7 @@ from pointnet2_modules import PointnetSAModuleVotes
 import pointnet2_utils
 from CGNL import SpatialCGNL
 
-def decode_scores(net, end_points, num_class, num_angle_bin, num_viewpoint, mean_size_arr):
+def decode_scores(net, end_points, num_class, num_angle_bin, num_viewpoint):
     net_transposed = net.transpose(2,1) # (batch_size, 1024, ..)
     batch_size = net_transposed.shape[0]
     num_proposal = net_transposed.shape[1]
@@ -45,13 +45,12 @@ def decode_scores(net, end_points, num_class, num_angle_bin, num_viewpoint, mean
 
 
 class ProposalModule(nn.Module):
-    def __init__(self, num_class, num_angle_bin, num_viewpoint, mean_size_arr, num_proposal, sampling, seed_feat_dim=256):
+    def __init__(self, num_class, num_angle_bin, num_viewpoint, num_proposal, sampling, seed_feat_dim=256):
         super().__init__() 
 
         self.num_class = num_class
         self.num_angle_bin = num_angle_bin
         self.num_viewpoint = num_viewpoint
-        self.mean_size_arr = mean_size_arr
         self.num_proposal = num_proposal
         self.sampling = sampling
         self.seed_feat_dim = seed_feat_dim
@@ -119,5 +118,5 @@ class ProposalModule(nn.Module):
         net = F.relu(self.bn2(self.conv2(net))) 
         net = self.conv3(net) # (batch_size, 2+3+1+1+num_angle_bin*2+num_viewpoint+self.num_class, num_proposal)
 
-        end_points = decode_scores(net, end_points, self.num_class, self.num_angle_bin, self.num_viewpoint, self.mean_size_arr)
+        end_points = decode_scores(net, end_points, self.num_class, self.num_angle_bin, self.num_viewpoint)
         return end_points

@@ -113,7 +113,6 @@ def compute_grasp_and_sem_cls_loss(end_points, config):
     num_angle_bin = config.num_angle_bin
     num_viewpoint = config.num_viewpoint
     num_class = config.num_class
-    mean_size_arr = config.mean_size_arr
 
     object_assignment = end_points['object_assignment']
     batch_size = object_assignment.shape[0]

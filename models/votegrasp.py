@@ -32,15 +32,13 @@ class VoteGrasp(nn.Module):
             Number of votes generated from each seed point.
     """
 
-    def __init__(self, num_class, num_angle_bin, num_viewpoint, mean_size_arr,
+    def __init__(self, num_class, num_angle_bin, num_viewpoint,
         input_feature_dim=0, num_proposal=128, vote_factor=1, sampling='vote_fps'):
         super().__init__()
 
         self.num_class = num_class
         self.num_angle_bin = num_angle_bin
         self.num_viewpoint = num_viewpoint
-        self.mean_size_arr = mean_size_arr
-        assert(mean_size_arr.shape[0] == self.num_viewpoint)
         self.input_feature_dim = input_feature_dim
         self.num_proposal = num_proposal
         self.vote_factor = vote_factor
@@ -53,8 +51,7 @@ class VoteGrasp(nn.Module):
         self.vgen = VotingModule(self.vote_factor, 256)
 
         # Vote aggregation and detection
-        self.pnet = ProposalModule(num_class, num_angle_bin, num_viewpoint,
-            mean_size_arr, num_proposal, sampling)
+        self.pnet = ProposalModule(num_class, num_angle_bin, num_viewpoint, num_proposal, sampling)
 
     def forward(self, inputs):
         """ Forward pass of the network
