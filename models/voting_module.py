@@ -3,12 +3,6 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-''' Voting module: generate votes from XYZ and features of seed points.
-
-Date: July, 2019
-Author: Charles R. Qi and Or Litany
-'''
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

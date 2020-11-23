@@ -10,4 +10,4 @@ python setup.py install
 python train.py --dataset ycbgrasp --log_dir log_ycbgrasp
 
 # testing
-python demo.py
+python predict.py

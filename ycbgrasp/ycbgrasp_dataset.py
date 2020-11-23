@@ -14,7 +14,7 @@ import ycbgrasp_utils
 from model_util_ycbgrasp import ycbgraspDatasetConfig
 
 DC = ycbgraspDatasetConfig() # dataset specific config
-MAX_NUM_GRASP = 64 # maximum number of grasps allowed per scene
+MAX_NUM_GRASP = 64
 MEAN_COLOR_RGB = np.array([0.5,0.5,0.5])
 
 class ycbgraspVotesDataset(Dataset):
@@ -121,7 +121,7 @@ class ycbgraspVotesDataset(Dataset):
         ret_dict['angle_residual_label'] = angle_residuals.astype(np.float32)
         ret_dict['viewpoint_class_label'] = viewpoint_classes.astype(np.int64)
         target_grasps_semcls = np.zeros((MAX_NUM_GRASP))
-        target_grasps_semcls[0:grasps.shape[0]] = grasps[:,-1] # from 0 to 9
+        target_grasps_semcls[0:grasps.shape[0]] = grasps[:,-1]
         ret_dict['sem_cls_label'] = target_grasps_semcls.astype(np.int64)
         ret_dict['grasp_label_mask'] = target_grasps_mask.astype(np.float32)
         
