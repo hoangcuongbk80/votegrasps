@@ -129,7 +129,7 @@ def compute_grasp_and_sem_cls_loss(end_points, config):
         torch.sum(dist2*grasp_label_mask)/(torch.sum(grasp_label_mask)+1e-6)
     center_loss = centroid_reg_loss1 + centroid_reg_loss2
 
-    # Compute angle loss
+    # Compute angle loss (in-plane rotation)
     angle_class_label = torch.gather(end_points['angle_class_label'], 1, object_assignment) # select (B,K) from (B,K2)
     criterion_angle_class = nn.CrossEntropyLoss(reduction='none')
     angle_class_loss = criterion_angle_class(end_points['angle_scores'].transpose(2,1), angle_class_label) # (B,K)
@@ -218,8 +218,7 @@ def get_loss(end_points, config):
     end_points['quality_loss'] = quality_loss
     end_points['angle_cls_loss'] = angle_cls_loss
     end_points['angle_reg_loss'] = angle_reg_loss
-    end_points['size_cls_loss'] = viewpoint_cls_loss
-    #end_points['size_reg_loss'] = size_reg_loss
+    end_points['viewpoint_cls_loss'] = viewpoint_cls_loss
     end_points['sem_cls_loss'] = sem_cls_loss
     grasp_loss = center_loss + quality_loss + width_loss + 0.1*angle_cls_loss + angle_reg_loss + 0.1*viewpoint_cls_loss
     end_points['grasp_loss'] = grasp_loss
